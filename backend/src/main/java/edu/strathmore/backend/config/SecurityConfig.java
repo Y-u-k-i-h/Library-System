@@ -8,13 +8,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-//marks this as a configuration class
+
 @Configuration
 
 public class SecurityConfig {
 
     @Bean
-    // method that returns PasswordEncoder used to hash and verify passwords
+
     public  passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
