@@ -1,13 +1,13 @@
-package edu.strathmore.backend.controller;
+/*package edu.strathmore.backend.controller;
 
 import edu.strathmore.backend.model.User;
 import edu.strathmore.backend.model.Login;
-import edu.strathmore.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -58,7 +58,7 @@ public class loginController {
                 password.append(all.charAt(rand.nextInt(all.length())));
             }
 
-            return password.toString();
+            return ResponseEntity.ok(password.toString());
         }
         if (!password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")) {
             return ResponseEntity.badRequest().body("Password must be at least 8 characters long and include upper case, lower case, and a number");
@@ -197,3 +197,4 @@ public class loginController {
 
         return ResponseEntity.ok("Password successfully reset");
 }
+*/

@@ -17,4 +17,3 @@ public class Login{
         this.user_Id = user_Id;
     }
 }
-}

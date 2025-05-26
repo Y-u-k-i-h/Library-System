@@ -2,8 +2,12 @@ package edu.strathmore.backend.repository;
 
 import edu.strathmore.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User, String> {
-    Optional<User> findByUser_ID(String user_id);
+import java.util.Optional;
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    Optional<User> findById(long id);
+    Optional<User> findByEmail(String email);
 }
