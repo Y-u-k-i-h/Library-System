@@ -69,7 +69,7 @@
     font-size: 19px;
 }
 
-.forgot-password {
+.faint-out-button {
     padding-left: 62px;
     margin-top: 0px;
     color: #797979;
@@ -103,4 +103,18 @@
 
 .div-nothing {
     display: none;
+}
+
+.send-code-button {
+    display: flex;
+    width: 480px;
+    height: 50px;
+    color: white;
+    background: #3170e6;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
 }

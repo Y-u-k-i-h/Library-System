@@ -11,14 +11,34 @@ export default function SignUp() {
     const [action, setAction] = useState("Create an Account");
     const [forgotPassword, setForgotPassword] = useState(false);
 
+    const handleForgotPasswordClick = () => {
+        setForgotPassword(true);
+    }
+
+    const handleBackToLoginClick = () => {
+        setForgotPassword(false);
+    }
+
     return (
         <form className="signUp">
             <div className="header">
                 <div className="text-header">{action}</div>
                 <div className={action === "Create an Account" ? "underline-signup" : "underline-login"}></div>
             </div>
-            <div className="inputs">
 
+            {forgotPassword ?
+                    <div className="inputs">
+                        <div className="input">
+                            <img src={emailIcon} alt="Email Icon"/>
+                            <input type="email" id="email" name="email" placeholder="Email" required/>
+                        </div>
+                        <div className="submit-container">
+                            <div className="send-code-button">Send Code</div>
+                        </div>
+                        <div className="faint-out-button" onClick={handleBackToLoginClick}>Back to Login</div>
+                    </div>
+                 :
+                <div className="inputs">
                 {action === "Login" ?  <div className="input">
                     <img src={idIcon} alt="Identification Number Icon"/>
                     <input type="text" id="idNumber" name="idNumber" placeholder="Membership/Student ID" required/>
@@ -48,7 +68,8 @@ export default function SignUp() {
                            required/>
                 </div>}
 
-                {action === "Create an Account" ? <div className="div-nothing"></div> : <div className="forgot-password">Forgot Password?</div>}
+                {action === "Create an Account" ? <div className="div-nothing"></div> :
+                    <div className="faint-out-button" onClick={handleForgotPasswordClick}>Forgot Password?</div>}
 
                 <div className="submit-container">
                     <div className={action === "Login" ? "submit gray" : "submit"} onClick={()=>{setAction("Create an Account")}}>Sign Up</div>
@@ -56,6 +77,7 @@ export default function SignUp() {
                 </div>
 
             </div>
+                }
         </form>
     );
 }
