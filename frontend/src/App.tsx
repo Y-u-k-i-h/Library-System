@@ -1,9 +1,9 @@
-import SignUp from './pages/signUp.tsx';
+import AuthContainer from "./components/auth/AuthContainer.tsx";
 
 export default function App() {
     return (
         <div>
-            <SignUp />
+            <AuthContainer />
         </div>
     )
 }

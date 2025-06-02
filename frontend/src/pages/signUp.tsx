@@ -1,4 +1,4 @@
-import './signUp.css';
+import '../components/auth/AuthContainer.css';
 import nameIcon from '../assets/name.png';
 import idIcon from '../assets/id.png';
 import telephoneIcon from '../assets/telephone.png';

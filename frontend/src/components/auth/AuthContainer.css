@@ -1,4 +1,4 @@
-.signUp {
+.auth-container {
     display: flex;
     flex-direction: column;
     margin: auto;
@@ -24,15 +24,8 @@
     font-weight: 700;
 }
 
-.underline-signup{
-    width: 20%;
-    height: 5px;
-    background: #3170e6;
-    border-radius: 10px;
-}
-
-.underline-login {
-    width: 6%;
+.underline{
+    width: 10%;
     height: 5px;
     background: #3170e6;
     border-radius: 10px;
@@ -83,6 +76,7 @@
 }
 
 .submit {
+    border: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -101,13 +95,62 @@
     color: #676767;
 }
 
-.div-nothing {
-    display: none;
-}
-
-.send-code-button {
+.send-otp-button {
+    border: none;
     display: flex;
     width: 480px;
+    height: 50px;
+    color: white;
+    background: #3170e6;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+}
+
+.otp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.otp-container {
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    column-gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.otp-container input:focus-visible {
+     border-color: #3170e6;
+}
+
+.otp-inputs {
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    outline: none;
+    border: 2px solid #464545;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.otp-submit-button {
+    display: flex;
+    border: none;
+    width: 200px;
     height: 50px;
     color: white;
     background: #3170e6;
