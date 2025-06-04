@@ -147,7 +147,7 @@
     line-height: 1;
 }
 
-.otp-submit-button {
+.otp-resend-button {
     display: flex;
     border: none;
     width: 200px;
@@ -160,4 +160,10 @@
     cursor: pointer;
     justify-content: center;
     align-items: center;
+}
+
+.otp-resend-button:disabled {
+    background: #eaeaea;
+    color: #676767;
+    cursor: not-allowed;
 }
