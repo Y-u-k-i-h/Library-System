@@ -1,7 +1,10 @@
 import {useState, useRef, useEffect, type ChangeEvent} from "react";
 import './AuthContainer.css';
 
-export default function EnterOtpPage() {
+interface EnterOtpPageProps {
+    onOtpVerified: (otp: string) => void;
+}
+export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
 
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [timeLeft, setTimeLeft] = useState(30);

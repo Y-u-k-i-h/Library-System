@@ -1,6 +1,7 @@
+import { useState } from "react";
+
 import idIcon from "../../assets/id.png";
 import passwordIcon from "../../assets/lock.png";
-import { useState } from "react";
 
 interface LoginPageProps {
     onGoToSignUp: () => void;
@@ -8,9 +9,23 @@ interface LoginPageProps {
     currentState: string;
 }
 
+type LoginFormData = {
+    idNumber: string;
+    password: string;
+}
+
 export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentState }: LoginPageProps) {
-    const [idNumber, setIdNumber] = useState("");
-    const [password, setPassword] = useState("");
+    const [LoginFormData, setLoginFormData] = useState<LoginFormData>({
+        idNumber: "",
+        password: ""
+    });
+
+    const handleInputChange = (field: keyof LoginFormData, value: string) => {
+        setLoginFormData(prevState => ({
+            ...prevState,
+            [field]: value
+        }))
+    }
 
     return (
         <form className="inputs">
@@ -21,8 +36,8 @@ export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentS
                     id="idNumber"
                     name="idNumber"
                     placeholder="Membership/Student ID"
-                    value={idNumber}
-                    onChange={(e) => setIdNumber(e.target.value)}
+                    value={LoginFormData.idNumber}
+                    onChange={(e) => handleInputChange("idNumber", e.target.value)}
                     required
                 />
             </div>
@@ -33,8 +48,8 @@ export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentS
                     id="password"
                     name="password"
                     placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={LoginFormData.password}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
                     required
                 />
             </div>

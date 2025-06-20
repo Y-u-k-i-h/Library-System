@@ -1,13 +1,27 @@
-import emailIcon from "../../assets/email.png";
 import { useState } from "react";
+
+import emailIcon from "../../assets/email.png";
 
 interface ForgotPasswordPageProps {
     onGoToLogin: () => void;
     onGoToEnterOtp: () => void;
 }
 
+type ForgotPasswordFormData = {
+    email: string;
+}
+
 export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp }: ForgotPasswordPageProps) {
-    const [email, setEmail] = useState("");
+    const [forgotPasswordFormData, setForgotPasswordFormData] = useState<ForgotPasswordFormData>({
+        email: ""
+    });
+
+    const handleInputChange = (field: keyof ForgotPasswordFormData, value: string) => {
+        setForgotPasswordFormData(prevState => ({
+            ...prevState,
+            [field]: value
+        }));
+    }
 
     return (
         <form className="inputs">
@@ -18,8 +32,8 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp }: Forg
                     id="email"
                     name="email"
                     placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={forgotPasswordFormData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     required
                 />
             </div>

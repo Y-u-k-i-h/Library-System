@@ -1,4 +1,5 @@
 import {useState} from "react";
+
 import SignUpPage from "./SignUpPage.tsx";
 import LoginPage from "./LoginPage.tsx";
 import ForgotPasswordPage from "./ForgotPasswordPage.tsx";
@@ -16,7 +17,6 @@ const AUTH_STATES = {
 
 export default function AuthContainer() {
     const [currentState, setCurrentState] = useState(AUTH_STATES.SIGNUP);
-    const[userEmail, setUserEmail] = useState("");
 
     const goToSignUp = () => setCurrentState(AUTH_STATES.SIGNUP);
     const goToLogin = () => setCurrentState(AUTH_STATES.LOGIN);
@@ -57,8 +57,7 @@ export default function AuthContainer() {
                                            onGoToEnterOtp={goToEnterOtp} />;
 
             case AUTH_STATES.ENTER_OTP:
-                return <EnterOtpPage email={userEmail}
-                                     onVerifyOtp={goToResetPassword} />;
+                return <EnterOtpPage onOtpVerified={goToResetPassword} />;
 
             case AUTH_STATES.RESET_PASSWORD:
                 return <ResetPasswordPage onPasswordReset={goToLogin} />;

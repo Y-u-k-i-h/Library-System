@@ -1,22 +1,41 @@
+import { useState } from "react";
+
 import nameIcon from "../../assets/name.png";
 import emailIcon from "../../assets/email.png";
 import telephoneIcon from "../../assets/telephone.png";
 import passwordIcon from "../../assets/lock.png";
-import { useState } from "react";
 
 interface SignUpPageProps {
     onGoToLogin: () => void;
     currentState: string;
 }
 
-export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProps) {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
-    const [telephone, setTelephone] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+type SignUpFormData = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    telephone: string;
+    password: string;
+    confirmPassword: string;
+};
 
+export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProps) {
+
+    const [signUpFormData, setSignUpFormData] = useState<SignUpFormData>({
+        firstName: "",
+        lastName: "",
+        email: "",
+        telephone: "",
+        password: "",
+        confirmPassword: ""
+    });
+
+    const handleInputChange = (field: keyof SignUpFormData, value: string) => {
+        setSignUpFormData(prevData => ({
+            ...prevData,
+            [field]: value
+        }));
+    }
     return (
         <form className="inputs">
             <div className="input">
@@ -26,8 +45,8 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
                     id="username"
                     name="username"
                     placeholder="First name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={signUpFormData.firstName}
+                    onChange={(e) => handleInputChange("firstName", e.target.value)}
                     required
                 />
             </div>
@@ -38,8 +57,8 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
                     id="lastname"
                     name="lastname"
                     placeholder="Last name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    value={signUpFormData.lastName}
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
                     required
                 />
             </div>
@@ -50,8 +69,8 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
                     id="email"
                     name="email"
                     placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={signUpFormData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     required
                 />
             </div>
@@ -62,8 +81,8 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
                     id="telephone"
                     name="telephone"
                     placeholder="Telephone Number"
-                    value={telephone}
-                    onChange={(e) => setTelephone(e.target.value)}
+                    value={signUpFormData.telephone}
+                    onChange={(e) => handleInputChange("telephone", e.target.value)}
                     required
                 />
             </div>
@@ -74,8 +93,8 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
                     id="password"
                     name="password"
                     placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={signUpFormData.password}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
                     required
                 />
             </div>
@@ -86,8 +105,8 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={signUpFormData.confirmPassword}
+                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                     required
                 />
             </div>
