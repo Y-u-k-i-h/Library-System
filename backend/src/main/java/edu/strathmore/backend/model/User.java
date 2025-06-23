@@ -2,6 +2,7 @@ package edu.strathmore.backend.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long user_id;
+    @Column(unique=true, nullable=false)
+    private String userCode;
     private String fname;
     private String lname;
     private int phone;
@@ -25,6 +28,10 @@ public class User {
     private Date dateOfBirth;
     private String password;
     private String role;
+    private String otp;
+    private LocalDateTime otpExpiration;
+    private int failedAttempts;
+    private boolean accountLocked;
 
     @OneToMany(mappedBy="borrower", cascade=CascadeType.ALL)
     private List<BorrowingDetails> borrowings = new ArrayList<>();
@@ -42,6 +49,47 @@ public class User {
         this.role = role;
 
     }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
+
+    public boolean isAccountLocked() {
+        return accountLocked;
+    }
+
+    public void setAccountLocked(boolean accountLocked) {
+        this.accountLocked = accountLocked;
+    }
+
+    public int getFailedAttempts() {
+        return failedAttempts;
+    }
+
+    public void setFailedAttempts(int failedAttempts) {
+        this.failedAttempts = failedAttempts;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public LocalDateTime getOtpExpiration() {
+        return otpExpiration;
+    }
+
+    public void setOtpExpiration(LocalDateTime otpExpiration) {
+        this.otpExpiration = otpExpiration;
+    }
+
     public long getId() {
 
         return id;
