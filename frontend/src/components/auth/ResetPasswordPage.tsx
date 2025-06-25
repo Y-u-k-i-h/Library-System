@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import passwordIcon from "../../assets/lock.png";
+import passwordIcon from "../../assets/auth-assets/password.svg";
 
 interface ResetPasswordPageProps {
     onPasswordReset: () => void;
@@ -52,7 +52,7 @@ export default function ResetPasswordPage({ onPasswordReset }: ResetPasswordPage
                 />
             </div>
             <div className="submit-container">
-                <button className="submit" onClick={onPasswordReset}>Reset Password</button>
+                <button className="send-button" onClick={onPasswordReset}>Reset Password</button>
             </div>
         </form>
     )

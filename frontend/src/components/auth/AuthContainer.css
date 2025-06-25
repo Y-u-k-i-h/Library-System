@@ -62,11 +62,19 @@
     font-size: 19px;
 }
 
-.faint-out-button {
-    padding-left: 62px;
+.faint-out-button-forgot-password {
+    padding-right: 62px;
+    margin-left: auto;
     margin-top: 0px;
     color: #797979;
     cursor: pointer;
+}
+
+.faint-out-button-otp {
+    margin: 0 auto ;
+    margin-top: 0px;
+    color: #797979;
+    cursor: pointer;;
 }
 
 .submit-container {

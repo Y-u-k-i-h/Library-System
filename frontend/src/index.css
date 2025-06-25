@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-image: url("./assets/strath-background.png");
+    background-image: url("assets/auth-assets/strath-background.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

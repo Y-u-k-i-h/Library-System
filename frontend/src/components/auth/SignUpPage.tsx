@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import nameIcon from "../../assets/name.png";
-import emailIcon from "../../assets/email.png";
-import telephoneIcon from "../../assets/telephone.png";
-import passwordIcon from "../../assets/lock.png";
+import nameIcon from "../../assets/auth-assets/user.svg";
+import emailIcon from "../../assets/auth-assets/email.svg";
+import telephoneIcon from "../../assets/auth-assets/telephone.svg";
+import passwordIcon from "../../assets/auth-assets/password.svg";
 
 interface SignUpPageProps {
     onGoToLogin: () => void;
