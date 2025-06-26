@@ -6,25 +6,41 @@
     background-color: #d2d9e7;
     position: fixed;
     top: 0;
-    left: 65px; /* Default closed position */
-    right: 0;
+    left: 65px;
+    width: calc(100vw - 65px);
     height: 70px;
     box-sizing: border-box;
-    transition: left 0.5s ease-in-out;
+    transition: left 0.5s ease-in-out, width 0.5s ease-in-out;
     z-index: 50;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Higher specificity to ensure it overrides */
 .dashboard-header.sidebar-open {
     left: 250px !important;
+    width: calc(100vw - 250px) !important;
+}
+
+.dashboard-header.sidebar-open .header-logo {
+    min-width: 180px;
+}
+
+.dashboard-header.sidebar-open .header-center {
+    max-width: 500px;
+}
+
+.dashboard-header.sidebar-open .header-right {
+    min-width: 280px;
+}
+
+.dashboard-header.sidebar-open .header-search:hover .search-input {
+    width: 250px;
 }
 
 .header-logo {
     display: flex;
     align-items: center;
-    flex-shrink: 0; /* Prevent logo from shrinking */
-    min-width: 200px; /* Ensure consistent logo space */
+    flex-shrink: 0;
+    min-width: 200px;
 }
 
 .header-logo-img {
@@ -58,8 +74,8 @@
     flex-grow: 1;
     justify-content: center;
     gap: 20px;
-    max-width: 600px; /* Reduced max-width to prevent overflow */
-    margin: 0 auto; /* Center the content */
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .book-categories {
@@ -222,8 +238,8 @@
     align-items: center;
     gap: 15px;
     flex-shrink: 0;
-    min-width: 300px; /* Ensure consistent right section space */
-    justify-content: flex-end; /* Align items to the right */
+    min-width: 300px;
+    justify-content: flex-end;
 }
 
 .announcements {
