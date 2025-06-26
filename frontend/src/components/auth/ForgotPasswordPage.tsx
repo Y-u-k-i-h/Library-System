@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import emailIcon from "../../assets/email.png";
+import emailIcon from "../../assets/auth-assets/email.svg";
 
 interface ForgotPasswordPageProps {
     onGoToLogin: () => void;
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp }: Forg
             <div className="submit-container">
                 <button className="send-otp-button" onClick={onGoToEnterOtp}>Send OTP</button>
             </div>
-            <div className="faint-out-button" onClick={onGoToLogin}>Back to Login</div>
+            <div className="faint-out-button-otp" onClick={onGoToLogin}>Back to Login</div>
         </form>
         )
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import idIcon from "../../assets/id.png";
-import passwordIcon from "../../assets/lock.png";
+import idIcon from "../../assets/auth-assets/idCard.svg";
+import passwordIcon from "../../assets/auth-assets/password.svg";
 
 interface LoginPageProps {
     onGoToSignUp: () => void;
@@ -53,11 +53,11 @@ export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentS
                     required
                 />
             </div>
-            <div className="faint-out-button" onClick={onGoToForgotPassword}>Forgot Password?</div>
             <div className="submit-container">
                 <button className={currentState === "Login" ? "submit gray" : "submit"} onClick={onGoToSignUp}>Sign Up</button>
                 <button className={currentState === "Create an Account" ? "submit gray" : "submit"}>Log in</button>
             </div>
+            <div className="faint-out-button-forgot-password" onClick={onGoToForgotPassword}>Forgot your password?</div>
         </form>
     )
 }
