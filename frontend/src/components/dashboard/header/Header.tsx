@@ -92,7 +92,7 @@ export default function Header({isSidebarOpen}: HeaderProps) {
 
     {/* Render the header component */}
     return (
-        <header className="dashboard-header">
+        <header className={`dashboard-header ${isSidebarOpen ? 'sidebar-open' : ''}`}>
 
             <div className="header-logo">
                 <img

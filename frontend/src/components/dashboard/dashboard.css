@@ -1,3 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    background: none;
+    background: #f5f7fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    overflow-x: hidden;
+}
+
+.dashboard {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+.dashboard-content {
+    margin-left: 65px; /* Default closed position */
+    margin-top: 70px;
+    padding: 20px;
+    transition: margin-left 0.5s ease-in-out;
+    min-height: calc(100vh - 70px);
+}
+
+/* Higher specificity to ensure it overrides */
+.dashboard-content.sidebar-open {
+    margin-left: 250px !important;
 }

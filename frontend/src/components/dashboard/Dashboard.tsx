@@ -35,6 +35,12 @@ export default function Dashboard() {
                 onMenuHover={handleMenuHover}
                 onMenuLeave={handleMenuLeave}
             />
+
+            <main className={`dashboard-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+                {/* Your main content goes here */}
+                <h1>Dashboard Content</h1>
+                <p>This is where your main dashboard content will be displayed.</p>
+            </main>
         </div>
     );
 }
