@@ -4,30 +4,7 @@
     justify-content: space-between;
     padding: 10px 50px 10px 30px;
     background-color: #d2d9e7;
-}
-
-.sidebar-toggle {
-    flex-shrink: 0;
-    margin-right: 20px;
-}
-
-.sidebar-toggle-button {
-    background: transparent;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.sidebar-toggle-button:hover {
-    background-color: rgba(0, 0, 0, 0.2);
-}
-
-.sidebar-toggle-button:active {
-    background-color: rgba(0, 0, 0, 0.4);
+    width: calc(100vw - 50px);
 }
 
 .header-logo {

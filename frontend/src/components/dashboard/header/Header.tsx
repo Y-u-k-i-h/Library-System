@@ -6,18 +6,11 @@ import userPic from "../../../assets/dashboard-assets/userPic.svg";
 import searchIcon from "../../../assets/dashboard-assets/search.svg";
 import announcementIcon from "../../../assets/dashboard-assets/announcement.svg";
 import moneyIcon from "../../../assets/dashboard-assets/money.svg";
-import menuIcon from "../../../assets/dashboard-assets/menu.svg";
-import menuFoldIcon from "../../../assets/dashboard-assets/menuFold.svg";
-import menuUnfoldIcon from "../../../assets/dashboard-assets/menuUnfold.svg";
 
 import '../header/Header.css';
 
 interface HeaderProps {
     isSidebarOpen: boolean;
-    isMenuHovered: boolean;
-    toggleSidebar: () => void;
-    onMenuHover: () => void;
-    onMenuLeave: () => void;
 }
 
 const FILTER_OPTIONS = {
@@ -50,24 +43,16 @@ const FILTER_OPTIONS = {
     ]
 };
 
-export default function Header({
-    isSidebarOpen,
-    isMenuHovered,
-    toggleSidebar,
-    onMenuHover,
-    onMenuLeave
-}: HeaderProps) {
+export default function Header({isSidebarOpen}: HeaderProps) {
 
     {/* State to manage filter dropdown visibility and selected filters */}
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [selectedFilterOptions, setSelectedFilterOptions] = useState<string[]>([]);
 
-    console.log(isFilterOpen); // Debugging line to check filter state
-
     // Handle filter changes
     const handleFilterChange = (filterValue: string) => {
-        setSelectedFilterOptions(previousFilter => {
+        setSelectedFilterOptions( previousFilter => {
             if (previousFilter.includes(filterValue)) {
                 // If the filter is already selected, remove it
                 return previousFilter.filter(filterTest => filterTest !== filterValue);
@@ -105,36 +90,9 @@ export default function Header({
         }, 500); // Adjust the timeout to match your CSS transition duration
     }
 
-    const getMenuIcon = () => {
-        if (!isMenuHovered) {
-            return menuIcon;
-        }
-        if (isSidebarOpen) {
-            return menuFoldIcon;
-        } else {
-            return menuUnfoldIcon;
-        }
-    }
-
     {/* Render the header component */}
     return (
         <header className="dashboard-header">
-
-            {/* Sidebar Toggle Button */}
-            <div className="sidebar-toggle">
-                <button
-                    className="sidebar-toggle-button"
-                    onClick={toggleSidebar}
-                    onMouseEnter={onMenuHover}
-                    onMouseLeave={onMenuLeave}
-                    aria-label={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
-                >
-                    <img
-                        src={getMenuIcon()}
-                        alt={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
-                    />
-                </button>
-            </div>
 
             <div className="header-logo">
                 <img
@@ -222,7 +180,12 @@ export default function Header({
                         className="search-input"
                         placeholder="Search for books..."
                     />
-                    <button className="search-button"><img src={searchIcon}/></button>
+                    <button className="search-button">
+                        <img
+                            src={searchIcon}
+                            alt="Search Icon"
+                        />
+                    </button>
                 </div>
             </div>
 
