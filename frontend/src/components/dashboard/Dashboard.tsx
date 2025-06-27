@@ -26,13 +26,19 @@ export default function Dashboard() {
         <div className="dashboard">
             <Header
                 isSidebarOpen={isSidebarOpen}
+            />
+
+            <Sidebar
+                isSidebarOpen={isSidebarOpen}
                 isMenuHovered={isMenuHovered}
                 toggleSidebar={toggleSidebar}
                 onMenuHover={handleMenuHover}
                 onMenuLeave={handleMenuLeave}
             />
 
-            <Sidebar isSidebarOpen={isSidebarOpen}/>
+            <main className={`dashboard-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+            
+            </main>
         </div>
     );
 }
