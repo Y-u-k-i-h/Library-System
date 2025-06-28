@@ -15,7 +15,7 @@ const AUTH_STATES = {
     RESET_PASSWORD: "Reset Password"
 };
 
-export default function AuthContainer() {
+export default function AuthComponent() {
     const [currentState, setCurrentState] = useState(AUTH_STATES.SIGNUP);
 
     const goToSignUp = () => setCurrentState(AUTH_STATES.SIGNUP);
