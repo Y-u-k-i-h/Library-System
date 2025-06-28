@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import passwordIcon from "../../assets/auth-assets/password.svg";
+import AuthLayout from "./AuthLayout";
 
 interface ResetPasswordPageProps {
-    onPasswordReset: () => void;
+    onPasswordReset?: () => void;
+    standalone?: boolean;
 }
 
 type ResetPasswordFormData = {
@@ -11,8 +14,8 @@ type ResetPasswordFormData = {
     confirmPassword: string;
 };
 
-export default function ResetPasswordPage({ onPasswordReset }: ResetPasswordPageProps) {
-
+export default function ResetPasswordPage({ onPasswordReset, standalone = false }: ResetPasswordPageProps) {
+    const navigate = useNavigate();
     const [resetPasswordFormData, setResetPasswordFormData] = useState<ResetPasswordFormData>({
         newPassword: "",
         confirmPassword: ""
@@ -25,7 +28,16 @@ export default function ResetPasswordPage({ onPasswordReset }: ResetPasswordPage
         }));
     };
 
-    return (
+    const handleResetPassword = () => {
+        if (standalone) {
+            // TODO: API call to reset password, then navigate to login
+            navigate('/login');
+        } else {
+            onPasswordReset?.();
+        }
+    };
+
+    const resetPasswordForm = (
         <form className="inputs">
             <div className="input">
                 <img src={passwordIcon} alt="Password Icon" />
@@ -52,8 +64,24 @@ export default function ResetPasswordPage({ onPasswordReset }: ResetPasswordPage
                 />
             </div>
             <div className="submit-container">
-                <button className="send-button" onClick={onPasswordReset}>Reset Password</button>
+                <button 
+                    type="button" 
+                    className="send-otp-button" 
+                    onClick={handleResetPassword}
+                >
+                    Reset Password
+                </button>
             </div>
         </form>
-    )
+    );
+
+    if (standalone) {
+        return (
+            <AuthLayout title="Reset Password">
+                {resetPasswordForm}
+            </AuthLayout>
+        );
+    }
+
+    return resetPasswordForm;
 }

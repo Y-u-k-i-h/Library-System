@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import idIcon from "../../assets/auth-assets/idCard.svg";
 import passwordIcon from "../../assets/auth-assets/password.svg";
+import AuthLayout from "./AuthLayout";
 
 interface LoginPageProps {
-    onGoToSignUp: () => void;
+    onGoToSignUp?: () => void;
     onGoToForgotPassword?: () => void;
-    currentState: string;
+    currentState?: string;
+    standalone?: boolean;
 }
 
 type LoginFormData = {
@@ -14,7 +17,8 @@ type LoginFormData = {
     password: string;
 }
 
-export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentState }: LoginPageProps) {
+export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentState, standalone = false }: LoginPageProps) {
+    const navigate = useNavigate();
     const [LoginFormData, setLoginFormData] = useState<LoginFormData>({
         idNumber: "",
         password: ""
@@ -27,7 +31,23 @@ export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentS
         }))
     }
 
-    return (
+    const handleSignUpClick = () => {
+        if (standalone) {
+            navigate('/signup');
+        } else {
+            onGoToSignUp?.();
+        }
+    };
+
+    const handleForgotPasswordClick = () => {
+        if (standalone) {
+            navigate('/forgot-password');
+        } else {
+            onGoToForgotPassword?.();
+        }
+    };
+
+    const loginForm = (
         <form className="inputs">
             <div className="input">
                 <img src={idIcon} alt="ID Icon" />
@@ -54,10 +74,33 @@ export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentS
                 />
             </div>
             <div className="submit-container">
-                <button className={currentState === "Login" ? "submit gray" : "submit"} onClick={onGoToSignUp}>Sign Up</button>
-                <button className={currentState === "Create an Account" ? "submit gray" : "submit"}>Log in</button>
+                <button 
+                    type="button"
+                    className={currentState === "Login" ? "submit gray" : "submit"} 
+                    onClick={handleSignUpClick}
+                >
+                    Sign Up
+                </button>
+                <button 
+                    type="submit"
+                    className={currentState === "Create an Account" ? "submit gray" : "submit"}
+                >
+                    Log in
+                </button>
             </div>
-            <div className="faint-out-button-forgot-password" onClick={onGoToForgotPassword}>Forgot your password?</div>
+            <div className="faint-out-button-forgot-password" onClick={handleForgotPasswordClick}>
+                Forgot your password?
+            </div>
         </form>
-    )
+    );
+
+    if (standalone) {
+        return (
+            <AuthLayout title="Login">
+                {loginForm}
+            </AuthLayout>
+        );
+    }
+
+    return loginForm;
 }

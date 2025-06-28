@@ -1,12 +1,15 @@
 import React from "react";
 import {useState, useRef, useEffect, type ChangeEvent} from "react";
+import { useNavigate } from "react-router-dom";
 import './AuthContainer.css';
+import AuthLayout from "./AuthLayout";
 
 interface EnterOtpPageProps {
-    onOtpVerified: (otp: string) => void;
+    onOtpVerified?: (otp: string) => void;
+    standalone?: boolean;
 }
-export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
-
+export default function EnterOtpPage({ onOtpVerified, standalone = false }: EnterOtpPageProps) {
+    const navigate = useNavigate();
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [timeLeft, setTimeLeft] = useState(30);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -59,7 +62,11 @@ export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
             console.log("OTP submitted:", combinedOtp);
 
             // TODO: API call to verify OTP && Navigate to Password Reset Page
-
+            if (standalone) {
+                navigate('/reset-password');
+            } else {
+                onOtpVerified?.(combinedOtp);
+            }
         }
     }
 
@@ -91,8 +98,7 @@ export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
         }
     }
 
-    // Render the OTP input fields and resend button
-    return (
+    const otpForm = (
         <div className="otp">
             <div className="otp-container">
                 {
@@ -121,5 +127,15 @@ export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
                 {timeLeft > 0 ? `Resend OTP in ${timeLeft}s` : "Resend OTP"}
             </button>
         </div>
-    )
+    );
+
+    if (standalone) {
+        return (
+            <AuthLayout title="Enter OTP">
+                {otpForm}
+            </AuthLayout>
+        );
+    }
+
+    return otpForm;
 }

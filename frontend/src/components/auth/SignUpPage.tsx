@@ -1,13 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./AuthContainer.css";
 import nameIcon from "../../assets/auth-assets/user.svg";
 import emailIcon from "../../assets/auth-assets/email.svg";
 import telephoneIcon from "../../assets/auth-assets/telephone.svg";
 import passwordIcon from "../../assets/auth-assets/password.svg";
+import AuthLayout from "./AuthLayout";
 
 interface SignUpPageProps {
-    onGoToLogin: () => void;
-    currentState: string;
+    onGoToLogin?: () => void;
+    currentState?: string;
+    standalone?: boolean;
 }
 
 type SignUpFormData = {
@@ -19,8 +22,8 @@ type SignUpFormData = {
     confirmPassword: string;
 };
 
-export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProps) {
-
+export default function SignUpPage({ onGoToLogin, currentState, standalone = false }: SignUpPageProps) {
+    const navigate = useNavigate();
     const [signUpFormData, setSignUpFormData] = useState<SignUpFormData>({
         firstName: "",
         lastName: "",
@@ -36,7 +39,16 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
             [field]: value
         }));
     }
-    return (
+
+    const handleLoginClick = () => {
+        if (standalone) {
+            navigate('/login');
+        } else {
+            onGoToLogin?.();
+        }
+    };
+
+    const signUpForm = (
         <form className="inputs">
             <div className="input">
                 <img src={nameIcon} alt="User Icon, First Name" />
@@ -111,9 +123,30 @@ export default function SignUpPage({ onGoToLogin, currentState }: SignUpPageProp
                 />
             </div>
             <div className="submit-container">
-                <button className={currentState === "Login" ? "submit gray" : "submit"}>Sign Up</button>
-                <button className={currentState === "Create an Account" ? "submit gray" : "submit"} onClick={onGoToLogin}>Login</button>
+                <button 
+                    type="submit"
+                    className={currentState === "Login" ? "submit gray" : "submit"}
+                >
+                    Sign Up
+                </button>
+                <button 
+                    type="button"
+                    className={currentState === "Create an Account" ? "submit gray" : "submit"} 
+                    onClick={handleLoginClick}
+                >
+                    Login
+                </button>
             </div>
         </form>
-    )
+    );
+
+    if (standalone) {
+        return (
+            <AuthLayout title="Create an Account">
+                {signUpForm}
+            </AuthLayout>
+        );
+    }
+
+    return signUpForm;
 }
