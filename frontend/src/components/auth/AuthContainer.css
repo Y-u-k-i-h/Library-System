@@ -12,11 +12,29 @@ body {
     width: 100%;
 }
 
+/* Auth page wrapper for standalone pages */
+.auth-page-wrapper {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-image: url("../../assets/auth-assets/strath-background.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+}
+
 .auth-container {
     display: flex;
     flex-direction: column;
     margin: auto;
-    margin-top: 20%;
     width: 600px;
     background-color: white;
     border-radius: 15px;
@@ -188,4 +206,145 @@ body {
     background: #eaeaea;
     color: #676767;
     cursor: not-allowed;
+}
+
+/* Media Queries for screens smaller than 700px */
+@media (max-width: 700px) {
+    .auth-page-wrapper {
+        padding: 10px;
+        background-attachment: scroll; /* Better performance on mobile */
+    }
+
+    .auth-container {
+        width: 90%;
+        max-width: 450px;
+        margin: 20px auto;
+        padding: 20px;
+        padding-bottom: 30px;
+    }
+
+    .text-header {
+        font-size: 36px;
+        text-align: center;
+    }
+
+    .input {
+        width: 90%;
+        max-width: 380px;
+        height: 70px;
+        margin: 0 auto;
+    }
+
+    .input input {
+        width: 280px;
+        font-size: 17px;
+    }
+
+    .input img {
+        margin: 0px 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    .submit-container {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .submit {
+        width: 280px;
+        height: 45px;
+        font-size: 17px;
+    }
+
+    .send-otp-button {
+        width: 90%;
+        max-width: 380px;
+        height: 45px;
+        font-size: 17px;
+        margin: 0 auto;
+    }
+
+    .otp-container {
+        max-width: 300px;
+        column-gap: 8px;
+    }
+
+    .otp-inputs {
+        padding: 10px;
+        font-size: 24px;
+    }
+
+    .otp-resend-button {
+        width: 180px;
+        height: 45px;
+        font-size: 17px;
+    }
+
+    .faint-out-button-forgot-password {
+        padding-right: 20px;
+        font-size: 14px;
+    }
+
+    .faint-out-button-otp {
+        font-size: 14px;
+    }
+}
+
+/* Media Queries for very small screens (phones in portrait) */
+@media (max-width: 480px) {
+    .auth-container {
+        width: 95%;
+        margin: 10px auto;
+        padding: 15px;
+    }
+
+    .text-header {
+        font-size: 28px;
+    }
+
+    .input {
+        width: 95%;
+        height: 65px;
+    }
+
+    .input input {
+        width: 220px;
+        font-size: 16px;
+    }
+
+    .input img {
+        margin: 0px 15px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .submit {
+        width: 250px;
+        height: 42px;
+        font-size: 16px;
+    }
+
+    .send-otp-button {
+        width: 95%;
+        height: 42px;
+        font-size: 16px;
+    }
+
+    .otp-container {
+        max-width: 250px;
+        column-gap: 5px;
+    }
+
+    .otp-inputs {
+        padding: 8px;
+        font-size: 20px;
+    }
+
+    .otp-resend-button {
+        width: 160px;
+        height: 42px;
+        font-size: 16px;
+    }
 }
