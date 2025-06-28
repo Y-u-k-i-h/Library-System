@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import "./AuthContainer.css";
 import nameIcon from "../../assets/auth-assets/user.svg";
 import emailIcon from "../../assets/auth-assets/email.svg";
 import telephoneIcon from "../../assets/auth-assets/telephone.svg";
