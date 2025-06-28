@@ -26,6 +26,7 @@ public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/signup")
