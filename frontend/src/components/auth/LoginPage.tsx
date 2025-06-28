@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../../api/authApi";
 
 import idIcon from "../../assets/auth-assets/idCard.svg";
 import passwordIcon from "../../assets/auth-assets/password.svg";
@@ -47,8 +48,29 @@ export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentS
         }
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const LoginData = {
+            userCode: LoginFormData.idNumber,
+            password: LoginFormData.password
+        }
+
+        try {
+        const result = await login(LoginData);
+        if (result) {
+            alert("Login successful! Welcome");
+            navigate("/dashboard"); // Redirect to home page or dashboard
+        }
+    } catch (error) {
+        console.error("Login failed:", error);
+        alert("Login failed. Please check your ID and password.");
+    }
+    };
+
+
     const loginForm = (
-        <form className="inputs">
+        <form className="inputs" onSubmit={handleSubmit}>
             <div className="input">
                 <img src={idIcon} alt="ID Icon" />
                 <input

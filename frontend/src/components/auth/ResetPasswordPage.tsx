@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { resetPassword } from "../../api/authApi";
 import passwordIcon from "../../assets/auth-assets/password.svg";
 import AuthLayout from "./AuthLayout";
 
@@ -14,7 +14,9 @@ type ResetPasswordFormData = {
     confirmPassword: string;
 };
 
-export default function ResetPasswordPage({ onPasswordReset, standalone = false }: ResetPasswordPageProps) {
+export default function ResetPasswordPage({ onPasswordReset, standalone = false}: ResetPasswordPageProps) {
+    // Using local storage to store email for ResetPasswordPage
+    const email = localStorage.getItem("email");
     const navigate = useNavigate();
     const [resetPasswordFormData, setResetPasswordFormData] = useState<ResetPasswordFormData>({
         newPassword: "",
@@ -28,14 +30,43 @@ export default function ResetPasswordPage({ onPasswordReset, standalone = false 
         }));
     };
 
-    const handleResetPassword = () => {
-        if (standalone) {
-            // TODO: API call to reset password, then navigate to login
-            navigate('/login');
-        } else {
-            onPasswordReset?.();
+    const handleResetPassword = async (e:React.FormEvent) => {
+        e.preventDefault();
+
+        if (resetPasswordFormData.newPassword !== resetPasswordFormData.confirmPassword) {
+            alert("Passwords do not match");
+            return;
         }
-    };
+
+        if (!resetPasswordFormData.newPassword.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
+            alert("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.");
+            return;
+        }
+
+        const resetPasswordData = {
+            email: email || "", // Use the email from localStorage
+            newPassword: resetPasswordFormData.newPassword,
+            confirmPassword: resetPasswordFormData.confirmPassword
+        };
+
+        try {
+            const result = await resetPassword(resetPasswordData);
+            if (result) {
+                alert("Password reset successfully!");
+                localStorage.removeItem("email"); // Clean up after success
+                if (standalone) {
+                    navigate('/login');
+                } else {
+                    onPasswordReset?.();
+                }
+            }
+        } catch (error: any) {
+            console.error("Error resetting password:", error);
+            alert(error.response?.data || "Failed to reset password. Please try again.");
+        }
+
+
+    }
 
     const resetPasswordForm = (
         <form className="inputs">

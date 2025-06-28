@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./AuthContainer.css";
+import { requestOtp } from "../../api/authApi";
 
 import emailIcon from "../../assets/auth-assets/email.svg";
 import AuthLayout from "./AuthLayout";
@@ -43,8 +45,28 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp, standa
         }
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const forgotPasswordData = {
+            email: forgotPasswordFormData.email
+        };
+        
+        try {
+            const result = await requestOtp(forgotPasswordData.email);
+            if (result) {
+                alert("OTP sent to your email. Please check your inbox or spam.");
+                handleSendOtp();
+            }
+        } catch (error) {
+            console.error("Error sending OTP:", error);
+            alert("Failed to send OTP. Please try again.");
+        }
+
+    };
+
     const forgotPasswordForm = (
-        <form className="inputs">
+        <form className="inputs" onSubmit={handleSubmit}>
             <div className="input">
                 <img src={emailIcon} alt="Email Icon" />
                 <input
@@ -59,9 +81,8 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp, standa
             </div>
             <div className="submit-container">
                 <button 
-                    type="button" 
-                    className="send-otp-button" 
-                    onClick={handleSendOtp}
+                    type="submit"
+                    className="send-otp-button"
                 >
                     Send OTP
                 </button>
