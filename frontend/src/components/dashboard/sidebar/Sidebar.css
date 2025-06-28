@@ -9,7 +9,7 @@
     flex-direction: column;
     transition: width 0.5s ease-in-out;
     overflow: hidden;
-    z-index: 40; /* Lower than header z-index (50) */
+    z-index: 40;
 }
 
 .sidebar-contents {
@@ -34,7 +34,7 @@
     height: 50px;
     padding: 0 15px;
     border-radius: 8px;
-    transition: all 0.3s ease;
+    transition: all 0.5s ease;
     gap: 15px;
 }
 
@@ -73,4 +73,79 @@
 
 .menu-toggle:active {
     background: rgba(0, 0, 0, 0.4);
+}
+
+.nav-items-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+    justify-content: space-evenly;
+}
+
+.nav-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 45px;
+    padding: 0 15px;
+    border-radius: 8px;
+    transition: all 0.5s ease;
+    gap: 15px;
+}
+
+.nav-item:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.nav-icon {
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    transition: transform 0.5s ease;
+}
+
+.nav-item:hover .nav-icon {
+    transform: scale(1.1);
+}
+
+.nav-text {
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    white-space: nowrap;
+    transition: opacity 0.5s ease;
+}
+
+.nav-item:hover .nav-text {
+    opacity: 1;
+}
+
+.sidebar-closed .nav-item {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+}
+
+.sidebar-open .nav-text {
+    position: static;
+    opacity: 1;
+    width: auto;
+    transition: all 0.5s ease;
+}
+
+.sidebar-closed .nav-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.5s ease;
+    position: absolute;
+}
+
+/* Media Query for mobile overlay behavior */
+@media (max-width: 700px) {
+    .sidebar {
+        z-index: 60; /* Higher than header (50) to overlay on top */
+    }
 }

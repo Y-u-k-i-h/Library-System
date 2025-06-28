@@ -356,3 +356,111 @@
     border-radius: 50%;
     border: 2px solid #ccc;
 }
+
+/* Media Query for screens below 700px */
+@media (max-width: 700px) {
+    /* Hide the profile, fine, and announcements buttons */
+    .fine,
+    .header-user,
+    .announcements {
+        display: none;
+    }
+    
+    /* Prevent header from moving when sidebar opens on mobile */
+    .dashboard-header {
+        left: 65px !important; /* Keep header in fixed position */
+        width: calc(100vw - 65px) !important; /* Keep header width fixed */
+        padding: 15px 15px; /* Reduce horizontal padding */
+    }
+    
+    /* Override sidebar-open behavior on mobile - header stays put */
+    .dashboard-header.sidebar-open {
+        left: 65px !important; /* Don't move header */
+        width: calc(100vw - 65px) !important; /* Don't resize header */
+    }
+    
+    /* Adjust header right section */
+    .header-right {
+        min-width: auto; /* Remove fixed min-width */
+        gap: 10px; /* Reduce gap between items */
+    }
+    
+    /* Make logo section more compact */
+    .header-logo {
+        min-width: auto;
+        flex-shrink: 1; /* Allow shrinking */
+    }
+    
+    .header-logo-text {
+        display: none; /* Hide university name text */
+    }
+    
+    /* Adjust center section */
+    .header-center {
+        max-width: none;
+        flex-grow: 1;
+        gap: 10px;
+    }
+    
+    /* Make search more compact */
+    .header-search:hover .search-input {
+        width: 150px; /* Smaller search expansion */
+    }
+    
+    /* Make filter button more compact but visible */
+    .filter-toggle-button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        min-width: auto;
+    }
+    
+    /* Ensure filter dropdown appears above header */
+    .filter-dropdown {
+        z-index: 1100; /* Higher than header */
+    }
+    
+    /* Adjust notification button */
+    .notification-button {
+        padding: 6px;
+    }
+    
+    .notification-button img {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Additional media query for very small screens (below 500px) */
+@media (max-width: 500px) {
+    /* Keep normal header positioning, let sidebar overlay */
+    .dashboard-header {
+        height: 60px;
+        padding: 8px;
+    }
+    
+    /* Hide filter dropdown on very small screens */
+    .book-categories {
+        display: none;
+    }
+    
+    /* Make search even more compact */
+    .header-search {
+        min-width: 40px;
+        padding: 0 15px;
+    }
+    
+    .search-input {
+        width: 30px;
+    }
+    
+    .header-search:hover .search-input {
+        width: 120px;
+    }
+    
+    /* Adjust logo */
+    .header-logo-img {
+        width: 30px;
+        height: 35px;
+        margin-right: 5px;
+    }
+}
