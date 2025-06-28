@@ -1,7 +1,5 @@
-import SignUpPage from "../../components/auth/SignUpPage.tsx";
+import SignUpPage from '../../components/auth/SignUpPage';
 
 export default function SignUp() {
-    return (
-        <SignUpPage />
-    )
+    return <SignUpPage standalone={true} />;
 }

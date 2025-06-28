@@ -1,17 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./AuthContainer.css";
+import { requestOtp } from "../../api/authApi";
 
 import emailIcon from "../../assets/auth-assets/email.svg";
+import AuthLayout from "./AuthLayout";
 
 interface ForgotPasswordPageProps {
-    onGoToLogin: () => void;
-    onGoToEnterOtp: () => void;
+    onGoToLogin?: () => void;
+    onGoToEnterOtp?: () => void;
+    standalone?: boolean;
 }
 
 type ForgotPasswordFormData = {
     email: string;
 }
 
-export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp }: ForgotPasswordPageProps) {
+export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp, standalone = false }: ForgotPasswordPageProps) {
+    const navigate = useNavigate();
     const [forgotPasswordFormData, setForgotPasswordFormData] = useState<ForgotPasswordFormData>({
         email: ""
     });
@@ -23,8 +29,44 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp }: Forg
         }));
     }
 
-    return (
-        <form className="inputs">
+    const handleSendOtp = () => {
+        if (standalone) {
+            navigate('/enter-otp');
+        } else {
+            onGoToEnterOtp?.();
+        }
+    };
+
+    const handleBackToLogin = () => {
+        if (standalone) {
+            navigate('/login');
+        } else {
+            onGoToLogin?.();
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const forgotPasswordData = {
+            email: forgotPasswordFormData.email
+        };
+        
+        try {
+            const result = await requestOtp(forgotPasswordData.email);
+            if (result) {
+                alert("OTP sent to your email. Please check your inbox or spam.");
+                handleSendOtp();
+            }
+        } catch (error) {
+            console.error("Error sending OTP:", error);
+            alert("Failed to send OTP. Please try again.");
+        }
+
+    };
+
+    const forgotPasswordForm = (
+        <form className="inputs" onSubmit={handleSubmit}>
             <div className="input">
                 <img src={emailIcon} alt="Email Icon" />
                 <input
@@ -38,9 +80,26 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp }: Forg
                 />
             </div>
             <div className="submit-container">
-                <button className="send-otp-button" onClick={onGoToEnterOtp}>Send OTP</button>
+                <button 
+                    type="submit"
+                    className="send-otp-button"
+                >
+                    Send OTP
+                </button>
             </div>
-            <div className="faint-out-button-otp" onClick={onGoToLogin}>Back to Login</div>
+            <div className="faint-out-button-otp" onClick={handleBackToLogin}>
+                Back to Login
+            </div>
         </form>
-        )
+    );
+
+    if (standalone) {
+        return (
+            <AuthLayout title="Forgot Password">
+                {forgotPasswordForm}
+            </AuthLayout>
+        );
+    }
+
+    return forgotPasswordForm;
 }

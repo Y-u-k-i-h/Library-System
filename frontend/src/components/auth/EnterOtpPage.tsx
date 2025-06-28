@@ -1,12 +1,17 @@
 import React from "react";
 import {useState, useRef, useEffect, type ChangeEvent} from "react";
+import { useNavigate } from "react-router-dom";
 import './AuthContainer.css';
+import AuthLayout from "./AuthLayout";
+import { requestOtp, verifyOtp } from "../../api/authApi";
 
 interface EnterOtpPageProps {
-    onOtpVerified: (otp: string) => void;
+    onOtpVerified?: (otp: string) => void;
+    standalone?: boolean;
+    email: string;
 }
-export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
-
+export default function EnterOtpPage({ onOtpVerified, standalone = false, email }: EnterOtpPageProps) {
+    const navigate = useNavigate();
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [timeLeft, setTimeLeft] = useState(30);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -54,12 +59,33 @@ export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
     }
 
     // Function to handle OTP submission
-    const handleOtpSubmit = (combinedOtp: string) => {
-        if (combinedOtp.length === 6) {
-            console.log("OTP submitted:", combinedOtp);
+    const handleOtpSubmit = async (combinedOtp: string) => {
+        const verifyOtpData = {
+            email: email,
+            otp: combinedOtp
+        };
 
-            // TODO: API call to verify OTP && Navigate to Password Reset Page
+        try {
+            const result = await verifyOtp(verifyOtpData);
+            alert("OTP verified successfully!");
 
+            // Storing the email in local storage for use in ResetPasswordPage
+            localStorage.setItem("email", verifyOtpData.email);
+
+            if (standalone) {
+                navigate("/reset-password");
+            } else {
+                onOtpVerified?.(combinedOtp);
+            }
+        } catch (error) {
+            console.error("Error verifying OTP:", error);
+            alert("Failed to verify OTP. Please try again.");
+
+            // Clear the OTP inputs
+            setOtp(new Array(6).fill(""));
+            if (inputRefs.current[0]) {
+                inputRefs.current[0].focus();
+            }
         }
     }
 
@@ -83,7 +109,19 @@ export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
     // Function to handle resend OTP button click
     const handleResendOtp = () => {
         console.log("Resend OTP clicked, resending otp...");
-        // TODO: API call to resend OTP
+        
+        const requestOtpData = {
+            email: email
+        };
+
+        try {
+            requestOtp(requestOtpData.email);
+            alert("OTP resent successfully! Please check your email.");
+        } catch (error) {
+            console.error("Error resending OTP:", error);
+            alert("Failed to resend OTP. Please try again.");
+        }
+
         setTimeLeft(30);
         setOtp(new Array(6).fill(""));
         if (inputRefs.current[0]) {
@@ -91,8 +129,7 @@ export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
         }
     }
 
-    // Render the OTP input fields and resend button
-    return (
+    const otpForm = (
         <div className="otp">
             <div className="otp-container">
                 {
@@ -121,5 +158,15 @@ export default function EnterOtpPage({ onOtpVerified }: EnterOtpPageProps) {
                 {timeLeft > 0 ? `Resend OTP in ${timeLeft}s` : "Resend OTP"}
             </button>
         </div>
-    )
+    );
+
+    if (standalone) {
+        return (
+            <AuthLayout title="Enter OTP">
+                {otpForm}
+            </AuthLayout>
+        );
+    }
+
+    return otpForm;
 }

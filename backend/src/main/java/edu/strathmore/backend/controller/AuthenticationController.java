@@ -1,16 +1,23 @@
 package edu.strathmore.backend.controller;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import edu.strathmore.backend.model.Login;
 import edu.strathmore.backend.model.Signup;
 import edu.strathmore.backend.model.User;
 import edu.strathmore.backend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-import java.time.LocalDateTime;
-
-import java.util.*;
 
 @RestController
 @RequestMapping("/authentication")
@@ -158,11 +165,11 @@ public class AuthenticationController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
-        String userCode = request.get("userCode");
+        String email = request.get("email");
         String newPassword = request.get("newPassword");
         String confirmPassword = request.get("confirmPassword");
 
-        if (userCode == null || newPassword == null || confirmPassword == null) {
+        if (email == null || newPassword == null || confirmPassword == null) {
             return ResponseEntity.badRequest().body("All fields are required");
         }
 
@@ -175,7 +182,7 @@ public class AuthenticationController {
 
 
 
-        Optional<User> userOpt = userRepository.findByUserCode(userCode);
+        Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) return ResponseEntity.badRequest().body("User not found");
 
         User user = userOpt.get();

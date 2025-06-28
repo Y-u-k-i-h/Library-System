@@ -78,3 +78,11 @@ export default function AuthComponent() {
         </div>
     )
 };
+
+// Export individual standalone components for use in pages
+export { default as StandaloneLogin } from './LoginPage';
+export { default as StandaloneSignUp } from './SignUpPage';
+export { default as StandaloneForgotPassword } from './ForgotPasswordPage';
+export { default as StandaloneEnterOtp } from './EnterOtpPage';
+export { default as StandaloneResetPassword } from './ResetPasswordPage';
+export { default as AuthLayout } from './AuthLayout';
