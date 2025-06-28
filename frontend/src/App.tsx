@@ -8,6 +8,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword.tsx";
 import EnterOtp from "./pages/auth/EnterOtp.tsx";
 import ResetPassword from "./pages/auth/ResetPassword.tsx";
 import NoPage from "./pages/NoPage.tsx";
+import Dashboard from "./pages/auth/Dashboard.tsx";
 
 export default function App() {
     return (
@@ -23,6 +24,7 @@ export default function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/enter-otp" element={<EnterOtp />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="*" element={<NoPage />} />
                 </Routes>
             </BrowserRouter>
