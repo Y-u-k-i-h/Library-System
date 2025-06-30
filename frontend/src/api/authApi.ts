@@ -25,6 +25,14 @@ interface LoginData {
     password: string;
 }
 
+interface LoginResponse {
+    message: string;
+    token: string;
+    role: string;
+    userCode: string;
+    name: string;
+}
+
 interface OtpData {
     email: string;
     otp: string;
@@ -45,9 +53,18 @@ export const signup = async (signupData: SignupData) => {
     }
 }
 
-export const login = async (loginData: LoginData) => {
+export const login = async (loginData: LoginData): Promise<LoginResponse> => {
     try {
         const response = await authApiClient.post('/login', loginData);
+        
+        // Store the JWT token and user info in localStorage
+        if (response.data.token) {
+            localStorage.setItem('jwtToken', response.data.token);
+            localStorage.setItem('userRole', response.data.role);
+            localStorage.setItem('userCode', response.data.userCode);
+            localStorage.setItem('userName', response.data.name);
+        }
+        
         return response.data;
     } catch (error) {
         throw error;
@@ -80,3 +97,32 @@ export const resetPassword = async (resetData: ResetPasswordData) => {
         throw error;
     }
 }
+
+// Authentication utility functions
+export const authUtils = {
+    logout: () => {
+        // Clear all stored authentication data
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userCode');
+        localStorage.removeItem('userName');
+    },
+
+    isAuthenticated: (): boolean => {
+        return !!localStorage.getItem('jwtToken');
+    },
+
+    getCurrentUser: () => {
+        return {
+            userCode: localStorage.getItem('userCode'),
+            role: localStorage.getItem('userRole'),
+            name: localStorage.getItem('userName'),
+            token: localStorage.getItem('jwtToken')
+        };
+    },
+
+    getAuthHeader: () => {
+        const token = localStorage.getItem('jwtToken');
+        return token ? `Bearer ${token}` : '';
+    }
+};

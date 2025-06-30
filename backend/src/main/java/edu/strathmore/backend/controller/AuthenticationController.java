@@ -8,6 +8,10 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +22,8 @@ import edu.strathmore.backend.model.Login;
 import edu.strathmore.backend.model.Signup;
 import edu.strathmore.backend.model.User;
 import edu.strathmore.backend.repository.UserRepository;
+import edu.strathmore.backend.security.CustomUserDetailsService;
+import edu.strathmore.backend.security.JwtUtils;
 
 @RestController
 @RequestMapping("/authentication")
@@ -28,6 +34,15 @@ public class AuthenticationController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Signup signup) {
@@ -90,19 +105,41 @@ public class AuthenticationController {
         if (userCode.startsWith("AD")) return "ADMIN";
         return "UNKNOWN";
     }
-        @PostMapping("/login")
-        public ResponseEntity<Map<String, String>> login(@RequestBody Login login) {
-            Optional<User> userOpt = userRepository.findByUserCode(login.getUserCode());
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody Login login) {
+        try {
+            // Authenticate the user
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(login.getUserCode(), login.getPassword())
+            );
 
-            if (userOpt.isEmpty() || !passwordEncoder.matches(login.getPassword(), userOpt.get().getPassword())) {
-                return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
-            }
+            // Set authentication in SecurityContext
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            // Get user details from authentication
+            CustomUserDetailsService.CustomUserPrincipal userPrincipal = 
+                (CustomUserDetailsService.CustomUserPrincipal) authentication.getPrincipal();
+
+            // Generate JWT token
+            String jwtToken = jwtUtils.generateJwtToken(userPrincipal);
+
+            // Get user information
+            User user = userPrincipal.getUser();
+
+            // Create response with token and user info
             Map<String, String> response = new HashMap<>();
             response.put("message", "Login successful");
-            response.put("role", userOpt.get().getRole());
+            response.put("token", jwtToken);
+            response.put("role", user.getRole());
+            response.put("userCode", user.getUserCode());
+            response.put("name", user.getFname() + " " + user.getLname());
+
             return ResponseEntity.ok(response);
+
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
+    }
 
     private String generateSuggestedPassword() {
         String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

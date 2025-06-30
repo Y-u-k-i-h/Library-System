@@ -3,6 +3,7 @@ import {useState} from "react";
 import "./dashboard.css";
 import Header from "./header/Header.tsx";
 import Sidebar from "./sidebar/Sidebar.tsx";
+import DashboardContent from "./content/DashboardContent.tsx";
 
 export default function Dashboard() {
     // UseState to manage the sidebar toggle state
@@ -37,8 +38,9 @@ export default function Dashboard() {
             />
 
             <main className={`dashboard-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-            
+                <DashboardContent />
             </main>
+
         </div>
     );
 }
