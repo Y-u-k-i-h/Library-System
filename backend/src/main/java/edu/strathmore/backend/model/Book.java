@@ -30,6 +30,17 @@ public class Book {
         this.genre = genre;
         this.availability = availability;
         this.book_condition = condition;
+        // Generate a bookId from ISBN (last 4 digits) or use a counter
+        this.bookId = generateBookIdFromIsbn(isbn);
+    }
+
+    private long generateBookIdFromIsbn(String isbn) {
+        // Extract last 4 digits from ISBN and convert to long
+        String cleaned = isbn.replaceAll("[^0-9]", "");
+        if (cleaned.length() >= 4) {
+            return Long.parseLong(cleaned.substring(cleaned.length() - 4));
+        }
+        return System.currentTimeMillis() % 10000; // Fallback
     }
     public void setId(Long id) {
         this.id = id;

@@ -20,11 +20,14 @@ body {
     margin-left: 65px; /* Default closed position */
     margin-top: 70px;
     padding: 20px;
-    transition: margin-left 0.5s ease-in-out;
+    transition: margin-left 0.5s ease-in-out, width 0.5s ease-in-out;
     min-height: calc(100vh - 70px);
+    width: calc(100vw - 65px - 40px); /* Match header width calculation minus padding */
+    box-sizing: border-box;
 }
 
 /* Higher specificity to ensure it overrides */
 .dashboard-content.sidebar-open {
     margin-left: 250px !important;
+    width: calc(100vw - 250px - 40px) !important; /* Match header width calculation minus padding */
 }
