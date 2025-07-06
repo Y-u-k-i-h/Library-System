@@ -65,6 +65,20 @@
     flex-shrink: 0;
 }
 
+/* Filtered results grid - vertical layout */
+.filtered-books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.filtered-books-grid .book-card {
+    min-width: auto;
+    max-width: none;
+    flex-shrink: 1;
+}
+
 .no-books-message {
     text-align: center;
     color: #6b7280;
@@ -94,6 +108,11 @@
         max-width: 250px;
     }
 
+    .filtered-books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
     .books-section {
         padding: 15px;
     }
@@ -112,6 +131,11 @@
     .books-grid .book-card {
         min-width: 220px;
         max-width: 220px;
+    }
+
+    .filtered-books-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .books-section {

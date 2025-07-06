@@ -9,6 +9,7 @@ export default function Dashboard() {
     // UseState to manage the sidebar toggle state
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMenuHovered, setIsMenuHovered] = useState(false);
+    const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -22,11 +23,16 @@ export default function Dashboard() {
         setIsMenuHovered(false);
     };
 
+    const handleFiltersChange = (filters: string[]) => {
+        setAppliedFilters(filters);
+    };
+
     // Render the dashboard with header and sidebar components
     return (
         <div className="dashboard">
             <Header
                 isSidebarOpen={isSidebarOpen}
+                onFiltersChange={handleFiltersChange}
             />
 
             <Sidebar
@@ -38,7 +44,7 @@ export default function Dashboard() {
             />
 
             <main className={`dashboard-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-                <DashboardContent />
+                <DashboardContent appliedFilters={appliedFilters} />
             </main>
 
         </div>

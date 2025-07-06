@@ -4,7 +4,11 @@ import { authUtils } from "../../../api/authApi";
 import BookCard from "./BookCard";
 import "./dashboard-content.css";
 
-export default function DashboardContent() {
+interface DashboardContentProps {
+    appliedFilters: string[];
+}
+
+export default function DashboardContent({ appliedFilters }: DashboardContentProps) {
     const [books, setBooks] = useState<Book[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -44,6 +48,59 @@ export default function DashboardContent() {
         );
     };
 
+    // Function to filter books based on applied filters
+    const getFilteredBooks = (booksToFilter: Book[]) => {
+        if (appliedFilters.length === 0) {
+            return booksToFilter;
+        }
+
+        return booksToFilter.filter(book => {
+            // Check if book matches any of the applied filters
+            return appliedFilters.some(filter => {
+                // Check against genre
+                if (book.genre.toLowerCase().includes(filter.toLowerCase())) {
+                    return true;
+                }
+
+                // Check against availability status
+                if (filter === "Available" && book.availability) {
+                    return true;
+                }
+                if (filter === "Checked Out" && !book.availability) {
+                    return true;
+                }
+
+                // For subject filters, we need to check if the book title or genre contains subject keywords
+                const subjectKeywords = {
+                    "Maths": ["calculus", "algebra", "mathematics", "statistics", "math"],
+                    "Physics": ["physics", "quantum", "mechanics"],
+                    "Chemistry": ["chemistry", "organic", "chemical"],
+                    "Biology": ["biology", "cell", "genetics", "molecular"],
+                    "Computer Science": ["programming", "algorithms", "software", "computer", "database", "networks", "operating"],
+                    "History": ["history", "historical", "civilizations"],
+                    "Law": ["law", "legal", "constitutional", "criminal"],
+                    "Literature": ["literature", "poems", "poetry", "fiction"],
+                    "Economics": ["economics", "economic", "microeconomics", "macroeconomics"],
+                    "Philosophy": ["philosophy", "republic", "ethics", "meditations"]
+                };
+
+                if (subjectKeywords[filter as keyof typeof subjectKeywords]) {
+                    const keywords = subjectKeywords[filter as keyof typeof subjectKeywords];
+                    return keywords.some(keyword =>
+                        book.title.toLowerCase().includes(keyword) ||
+                        book.genre.toLowerCase().includes(keyword)
+                    );
+                }
+
+                return false;
+            });
+        });
+    };
+
+    // Decide what to show based on filters
+    const shouldShowAllSections = appliedFilters.length === 0;
+    const filteredBooks = getFilteredBooks(books);
+
     return (
         <div className="dashboard-content-wrapper">
             {/* Loading and error states - only show when needed */}
@@ -74,155 +131,176 @@ export default function DashboardContent() {
             {/* Display books by categories if available */}
             {!loading && !error && (
                 <div className="books-sections">
-                    {/* Popular Books Section - Always at the top */}
-                    <div className="books-section">
-                        <h2 className="section-title">Popular Books</h2>
-                        <div className="books-grid">
-                            {books.slice(0, 10).map((book) => (
-                                <BookCard key={`popular-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {books.length === 0 && (
-                            <div className="no-books-message">
-                                No books available at the moment.
+                    {shouldShowAllSections ? (
+                        <>
+                            {/* Popular Books Section - Always at the top */}
+                            <div className="books-section">
+                                <h2 className="section-title">Popular Books</h2>
+                                <div className="books-grid">
+                                    {books.slice(0, 10).map((book) => (
+                                        <BookCard key={`popular-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {books.length === 0 && (
+                                    <div className="no-books-message">
+                                        No books available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Recommended Books Section - Second priority */}
-                    <div className="books-section">
-                        <h2 className="section-title">Recommended for You</h2>
-                        <div className="books-grid">
-                            {books.slice(5, 15).map((book) => (
-                                <BookCard key={`recommended-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {books.length === 0 && (
-                            <div className="no-books-message">
-                                No recommended books available at the moment.
+                            {/* Recommended Books Section - Second priority */}
+                            <div className="books-section">
+                                <h2 className="section-title">Recommended for You</h2>
+                                <div className="books-grid">
+                                    {books.slice(5, 15).map((book) => (
+                                        <BookCard key={`recommended-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {books.length === 0 && (
+                                    <div className="no-books-message">
+                                        No recommended books available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Fiction Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Fiction</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Fiction']).map((book) => (
-                                <BookCard key={`fiction-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Fiction']).length === 0 && (
-                            <div className="no-books-message">
-                                No fiction books available at the moment.
+                            {/* Fiction Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Fiction</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Fiction']).map((book) => (
+                                        <BookCard key={`fiction-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Fiction']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No fiction books available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Non-Fiction Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Non-Fiction</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Non-Fiction']).map((book) => (
-                                <BookCard key={`nonfiction-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Non-Fiction']).length === 0 && (
-                            <div className="no-books-message">
-                                No non-fiction books available at the moment.
+                            {/* Non-Fiction Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Non-Fiction</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Non-Fiction']).map((book) => (
+                                        <BookCard key={`nonfiction-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Non-Fiction']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No non-fiction books available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Textbook Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Textbooks</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Textbook']).map((book) => (
-                                <BookCard key={`textbook-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Textbook']).length === 0 && (
-                            <div className="no-books-message">
-                                No textbooks available at the moment.
+                            {/* Textbook Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Textbooks</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Textbook']).map((book) => (
+                                        <BookCard key={`textbook-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Textbook']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No textbooks available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Biography Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Biography</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Biography']).map((book) => (
-                                <BookCard key={`biography-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Biography']).length === 0 && (
-                            <div className="no-books-message">
-                                No biography books available at the moment.
+                            {/* Biography Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Biography</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Biography']).map((book) => (
+                                        <BookCard key={`biography-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Biography']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No biography books available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Poetry Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Poetry</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Poetry']).map((book) => (
-                                <BookCard key={`poetry-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Poetry']).length === 0 && (
-                            <div className="no-books-message">
-                                No poetry books available at the moment.
+                            {/* Poetry Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Poetry</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Poetry']).map((book) => (
+                                        <BookCard key={`poetry-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Poetry']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No poetry books available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Children's Literature Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Children's Literature</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Children\'s Literature']).map((book) => (
-                                <BookCard key={`children-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Children\'s Literature']).length === 0 && (
-                            <div className="no-books-message">
-                                No children's literature books available at the moment.
+                            {/* Children's Literature Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Children's Literature</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Children\'s Literature']).map((book) => (
+                                        <BookCard key={`children-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Children\'s Literature']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No children's literature books available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Research Papers Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Research Papers</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Research Paper']).map((book) => (
-                                <BookCard key={`research-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Research Paper']).length === 0 && (
-                            <div className="no-books-message">
-                                No research papers available at the moment.
+                            {/* Research Papers Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Research Papers</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Research Paper']).map((book) => (
+                                        <BookCard key={`research-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Research Paper']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No research papers available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
 
-                    {/* Atlas/Maps Section */}
-                    <div className="books-section">
-                        <h2 className="section-title">Atlas & Maps</h2>
-                        <div className="books-grid">
-                            {getBooksByGenre(['Atlas/Maps']).map((book) => (
-                                <BookCard key={`atlas-${book.id || book.bookId}`} book={book} />
-                            ))}
-                        </div>
-                        {getBooksByGenre(['Atlas/Maps']).length === 0 && (
-                            <div className="no-books-message">
-                                No atlas or maps available at the moment.
+                            {/* Atlas/Maps Section */}
+                            <div className="books-section">
+                                <h2 className="section-title">Atlas & Maps</h2>
+                                <div className="books-grid">
+                                    {getBooksByGenre(['Atlas/Maps']).map((book) => (
+                                        <BookCard key={`atlas-${book.id || book.bookId}`} book={book} />
+                                    ))}
+                                </div>
+                                {getBooksByGenre(['Atlas/Maps']).length === 0 && (
+                                    <div className="no-books-message">
+                                        No atlas or maps available at the moment.
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
+                        </>
+                    ) : (
+                        /* Filtered Results Section */
+                        <div className="books-section">
+                            <h2 className="section-title">
+                                Filtered Results ({filteredBooks.length} books found)
+                            </h2>
+                            <div className="filtered-books-grid">
+                                {filteredBooks.map((book) => (
+                                    <BookCard key={`filtered-${book.id || book.bookId}`} book={book} />
+                                ))}
+                            </div>
+                            {filteredBooks.length === 0 && (
+                                <div className="no-books-message">
+                                    No books match the selected filters. Try adjusting your filters.
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

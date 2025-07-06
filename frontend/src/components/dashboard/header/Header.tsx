@@ -11,6 +11,7 @@ import '../header/Header.css';
 
 interface HeaderProps {
     isSidebarOpen: boolean;
+    onFiltersChange?: (filters: string[]) => void;
 }
 
 const FILTER_OPTIONS = {
@@ -43,7 +44,7 @@ const FILTER_OPTIONS = {
     ]
 };
 
-export default function Header({isSidebarOpen}: HeaderProps) {
+export default function Header({isSidebarOpen, onFiltersChange}: HeaderProps) {
 
     {/* State to manage filter dropdown visibility and selected filters */}
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -80,9 +81,24 @@ export default function Header({isSidebarOpen}: HeaderProps) {
         }
     };
 
+    const applyFilters = () => {
+        // Apply selected filters and close dropdown with animation
+        if (onFiltersChange) {
+            onFiltersChange(selectedFilterOptions);
+        }
+        setIsClosing(true);
+        setTimeout(() => {
+            setIsFilterOpen(false);
+            setIsClosing(false);
+        }, 500); // Adjust the timeout to match your CSS transition duration
+    }
+
     const clearAllFilters = () => {
         // Clear all selected filters with animation
         setSelectedFilterOptions([]);
+        if (onFiltersChange) {
+            onFiltersChange([]);
+        }
         setIsClosing(true);
         setTimeout(() => {
             setIsFilterOpen(false);
@@ -167,7 +183,7 @@ export default function Header({isSidebarOpen}: HeaderProps) {
 
                             <div className="filter-buttons">
                                 <button className="clear-filters" onClick={clearAllFilters}>Clear All</button>
-                                <button className="apply-filters">Apply Filters</button>
+                                <button className="apply-filters" onClick={applyFilters}>Apply Filters</button>
                             </div>
                         </div>
                     )}
