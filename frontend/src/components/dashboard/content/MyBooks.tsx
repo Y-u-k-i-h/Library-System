@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { borrowingApi, type BorrowingDetails } from '../../../api/borrowingApi';
+import { useNotification } from '../../../contexts/NotificationContext';
+import { useDataRefresh } from '../../../contexts/DataRefreshContext';
 import './MyBooks.css';
 import './book-card.css'; // Import modal styles
 
@@ -10,12 +12,14 @@ export default function MyBooks() {
     const [returningBooks, setReturningBooks] = useState<Set<number>>(new Set());
     const [showReturnConfirmation, setShowReturnConfirmation] = useState(false);
     const [bookToReturn, setBookToReturn] = useState<{ id: number; title: string; author: string } | null>(null);
+    const { showNotification } = useNotification();
+    const { refreshTrigger, triggerBooksRefresh, triggerBorrowingsRefresh } = useDataRefresh();
 
     console.log(borrowedBooks);
 
     useEffect(() => {
         fetchBorrowedBooks();
-    }, []);
+    }, [refreshTrigger]); // Re-fetch when refresh is triggered
 
     const fetchBorrowedBooks = async () => {
         try {
@@ -58,28 +62,69 @@ export default function MyBooks() {
 
         try {
             setReturningBooks(prev => new Set(prev).add(bookToReturn.id));
+            setShowReturnConfirmation(false);
             
             console.log('Returning book with borrowing ID:', bookToReturn.id);
-            await borrowingApi.returnBook(bookToReturn.id);
             
-            // Remove the returned book from the list
+            // Make the API call to return the book
+            const returnResult = await borrowingApi.returnBook(bookToReturn.id);
+            console.log('Book returned successfully:', returnResult);
+            
+            // Remove the book from the list after successful return
             setBorrowedBooks(prev => prev.filter(borrowing => borrowing.id !== bookToReturn.id));
             
-            console.log('Book returned successfully');
-            setShowReturnConfirmation(false);
+            // Show success notifications
+            showNotification(
+                `Book returned successfully!`,
+                'success',
+                'returned',
+                bookToReturn.title,
+                true // Toast notification
+            );
+            showNotification(
+                `You returned "${bookToReturn.title}" - Thank you for returning on time!`,
+                'success',
+                'returned',
+                bookToReturn.title,
+                false // Dropdown notification
+            );
+
+            // Trigger data refresh for books and borrowings
+            triggerBooksRefresh();
+            triggerBorrowingsRefresh();
+            
             setBookToReturn(null);
             
         } catch (error: any) {
             console.error('Error returning book:', error);
             
-            // Handle different types of errors
+            // Better error handling - don't always show error if operation might have succeeded
+            let errorMessage = 'Failed to return the book. Please try again.';
+            let shouldShowError = true;
+            
             if (error.response?.status === 400) {
-                alert(`Failed to return the book: ${error.response.data}`);
+                const backendMessage = error.response.data;
+                if (typeof backendMessage === 'string') {
+                    errorMessage = `Failed to return "${bookToReturn.title}": ${backendMessage}`;
+                } else {
+                    errorMessage = `Failed to return "${bookToReturn.title}": Invalid request`;
+                }
             } else if (error.response?.status === 401) {
-                alert('Authentication failed. Please try logging in again.');
-            } else {
-                alert('Failed to return the book. Please try again.');
+                errorMessage = 'Your session has expired. Please log in again.';
+            } else if (error.response?.status === 404) {
+                errorMessage = 'This borrowing record was not found. The book may already be returned.';
+                // Don't show error for 404 as the book might already be returned
+                shouldShowError = false;
+                // Refresh the list instead
+                fetchBorrowedBooks();
+            } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+                errorMessage = 'Network error. Please check your connection and try again.';
             }
+            
+            if (shouldShowError) {
+                showNotification(errorMessage, 'error', 'returned', bookToReturn.title, false);
+            }
+            
         } finally {
             setReturningBooks(prev => {
                 const newSet = new Set(prev);

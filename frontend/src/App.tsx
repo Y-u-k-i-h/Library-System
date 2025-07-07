@@ -10,6 +10,8 @@ import ResetPassword from "./pages/auth/ResetPassword.tsx";
 import NoPage from "./pages/NoPage.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import MyBooksContent from "./pages/MyBooksContent.tsx";
+import Reserved from "./pages/Reserved.tsx";
+import NotificationToast from "./components/ui/NotificationToast.tsx";
 
 export default function App() {
     return (
@@ -27,8 +29,10 @@ export default function App() {
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/my-books" element={<MyBooksContent />} />
+                    <Route path="/reservations" element={<Reserved />} />
                     <Route path="*" element={<NoPage />} />
                 </Routes>
+                <NotificationToast />
             </BrowserRouter>
         </div>
     )

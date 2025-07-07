@@ -1,11 +1,11 @@
 import {useState} from "react";
 
 import uniLogo from "../../../assets/dashboard-assets/uniLogo.png";
-import notificationIcon from "../../../assets/dashboard-assets/notification.svg";
 import userPic from "../../../assets/dashboard-assets/userPic.svg";
 import searchIcon from "../../../assets/dashboard-assets/search.svg";
 import announcementIcon from "../../../assets/dashboard-assets/announcement.svg";
 import moneyIcon from "../../../assets/dashboard-assets/money.svg";
+import NotificationDropdown from "../../ui/NotificationDropdown";
 
 import '../header/Header.css';
 
@@ -250,12 +250,7 @@ export default function Header({isSidebarOpen, onFiltersChange, onSearchChange}:
                 </div>
 
                 <div className="notifications">
-                    <button className="notification-button">
-                        <img
-                            src={notificationIcon}
-                            alt="Notification Icon"
-                        />
-                    </button>
+                    <NotificationDropdown />
                 </div>
 
                 <div className="header-user">

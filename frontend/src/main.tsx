@@ -1,5 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { NotificationProvider } from './contexts/NotificationContext'
+import { DataRefreshProvider } from './contexts/DataRefreshContext'
 
 import App from './App.tsx'
 
@@ -11,7 +13,11 @@ if (!rootElement) {
     const root = createRoot(rootElement);
     root.render (
         <StrictMode>
-            <App />
+            <DataRefreshProvider>
+                <NotificationProvider>
+                    <App />
+                </NotificationProvider>
+            </DataRefreshProvider>
         </StrictMode>
     );
 }

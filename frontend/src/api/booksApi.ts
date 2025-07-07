@@ -52,6 +52,8 @@ export interface Book {
     genre: string;
     availability: boolean;
     book_condition: string;
+    reservationCount?: number;
+    hasReservations?: boolean;
 }
 
 export const booksApi = {
@@ -61,6 +63,17 @@ export const booksApi = {
             return response.data;
         } catch (error) {
             console.error("Error fetching books:", error);
+            throw error;
+        }
+    },
+
+    // Get all books with reservation counts
+    getBooksWithReservations: async (): Promise<Book[]> => {
+        try {
+            const response = await booksApiClient.get("/books/with-reservations");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching books with reservations:", error);
             throw error;
         }
     },

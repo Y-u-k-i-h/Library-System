@@ -356,3 +356,205 @@
     background-color: #fca5a5;
     cursor: not-allowed;
 }
+
+/* Reservation-specific styles */
+.reservation-card {
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fef3c7, #fcd34d);
+}
+
+.reservation-status {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-badge.reserved {
+    background-color: #f59e0b;
+    color: #ffffff;
+}
+
+.status-badge.expiring {
+    background-color: #dc2626;
+    color: #ffffff;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.reservation-dates {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.date-info {
+    margin-bottom: 6px;
+    color: #374151;
+}
+
+.date-info:last-child {
+    margin-bottom: 0;
+}
+
+.date-info strong {
+    color: #1f2937;
+}
+
+.cancel-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.cancel-btn:hover:not(:disabled) {
+    background-color: #dc2626;
+}
+
+.cancel-btn:disabled {
+    background-color: #fca5a5;
+    cursor: not-allowed;
+}
+
+.reservation-note {
+    color: #6b7280;
+    font-style: italic;
+}
+
+.reservation-note small {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.85rem;
+}
+
+/* Confirmation Modal for Reservations */
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.confirmation-modal {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.confirmation-header {
+    margin-bottom: 16px;
+}
+
+.confirmation-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.confirmation-content {
+    margin-bottom: 24px;
+}
+
+.confirmation-content p {
+    margin: 0 0 12px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.book-info {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid #f59e0b;
+}
+
+.book-info strong {
+    display: block;
+    color: #1f2937;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.book-info span {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.confirmation-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.confirmation-actions .cancel-btn,
+.confirmation-actions .confirm-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.confirmation-actions .cancel-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.confirmation-actions .cancel-btn:hover:not(:disabled) {
+    background-color: #e5e7eb;
+}
+
+.cancel-reservation-btn {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+
+.cancel-reservation-btn:hover:not(:disabled) {
+    background-color: #dc2626 !important;
+}
+
+.confirmation-actions .cancel-btn:disabled,
+.confirmation-actions .confirm-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.confirmation-actions .cancel-btn:disabled:hover,
+.confirmation-actions .confirm-btn:disabled:hover {
+    background-color: inherit;
+}

@@ -8,7 +8,7 @@ import AuthLayout from "./AuthLayout";
 
 interface ForgotPasswordPageProps {
     onGoToLogin?: () => void;
-    onGoToEnterOtp?: () => void;
+    onGoToEnterOtp?: (email?: string) => void;
     standalone?: boolean;
 }
 
@@ -29,11 +29,11 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp, standa
         }));
     }
 
-    const handleSendOtp = () => {
+    const handleSendOtp = (email?: string) => {
         if (standalone) {
             navigate('/enter-otp');
         } else {
-            onGoToEnterOtp?.();
+            onGoToEnterOtp?.(email);
         }
     };
 
@@ -55,8 +55,10 @@ export default function ForgotPasswordPage({ onGoToLogin, onGoToEnterOtp, standa
         try {
             const result = await requestOtp(forgotPasswordData.email);
             if (result) {
+                // Store email in localStorage for use in OTP verification
+                localStorage.setItem("resetEmail", forgotPasswordData.email);
                 alert("OTP sent to your email. Please check your inbox or spam.");
-                handleSendOtp();
+                handleSendOtp(forgotPasswordData.email);
             }
         } catch (error) {
             console.error("Error sending OTP:", error);

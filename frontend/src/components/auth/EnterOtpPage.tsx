@@ -8,13 +8,16 @@ import { requestOtp, verifyOtp } from "../../api/authApi";
 interface EnterOtpPageProps {
     onOtpVerified?: (otp: string) => void;
     standalone?: boolean;
-    email: string;
+    email?: string;
 }
 export default function EnterOtpPage({ onOtpVerified, standalone = false, email }: EnterOtpPageProps) {
     const navigate = useNavigate();
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [timeLeft, setTimeLeft] = useState(30);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+    
+    // Get email from props or localStorage
+    const userEmail = email || localStorage.getItem("resetEmail") || "";
 
     useEffect(() => {
         if (inputRefs.current[0]) {
@@ -60,13 +63,18 @@ export default function EnterOtpPage({ onOtpVerified, standalone = false, email 
 
     // Function to handle OTP submission
     const handleOtpSubmit = async (combinedOtp: string) => {
+        if (!userEmail) {
+            alert("Email not found. Please go back to forgot password.");
+            return;
+        }
+        
         const verifyOtpData = {
-            email: email,
+            email: userEmail,
             otp: combinedOtp
         };
 
         try {
-            const result = await verifyOtp(verifyOtpData);
+            await verifyOtp(verifyOtpData);
             alert("OTP verified successfully!");
 
             // Storing the email in local storage for use in ResetPasswordPage
@@ -110,8 +118,13 @@ export default function EnterOtpPage({ onOtpVerified, standalone = false, email 
     const handleResendOtp = () => {
         console.log("Resend OTP clicked, resending otp...");
         
+        if (!userEmail) {
+            alert("Email not found. Please go back to forgot password.");
+            return;
+        }
+        
         const requestOtpData = {
-            email: email
+            email: userEmail
         };
 
         try {

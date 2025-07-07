@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { booksApi, type Book } from "../../../api/booksApi";
+import { useDataRefresh } from "../../../contexts/DataRefreshContext";
 import BookCard from "./BookCard";
+import BookCardSkeleton from "./BookCardSkeleton";
 import "./dashboard-content.css";
 
 interface DashboardContentProps {
@@ -12,31 +14,96 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
     const [books, setBooks] = useState<Book[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const { refreshTrigger } = useDataRefresh();
+
+    const fetchBooks = async (showLoadingState = true) => {
+        try {
+            if (showLoadingState) {
+                setLoading(true);
+            } else {
+                setIsRefreshing(true);
+            }
+            
+            console.log("Fetching books...");
+            const fetchedBooks = await booksApi.getBooksWithReservations();
+            
+            // Books already include reservation counts from the API
+            const booksWithReservations = fetchedBooks.map(book => ({
+                ...book,
+                hasReservations: (book.reservationCount || 0) > 0
+            }));
+            
+            setBooks(booksWithReservations);
+            console.log("Books fetched successfully:", booksWithReservations);
+            setError(null);
+        } catch (err) {
+            console.error("Error fetching books:", err);
+            setError("Failed to fetch books. Please try again later.");
+        } finally {
+            setLoading(false);
+            setIsRefreshing(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchBooks = async () => {
-            try {
-                console.log("Fetching books...");
-                const fetchedBooks = await booksApi.getAllBooks();
-                setBooks(fetchedBooks);
-                console.log("Books fetched successfully:", fetchedBooks);
-                setError(null);
-            } catch (err) {
-                console.error("Error fetching books:", err);
-                setError("Failed to fetch books. Please try again later.");
-            } finally {
-                setLoading(false);
+        // Initial fetch or refresh when trigger changes
+        fetchBooks();
+    }, [refreshTrigger]);
+
+    // Refresh when user returns to the tab
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                console.log("Tab became visible, refreshing books...");
+                const fetchBooks = async () => {
+                    try {
+                        const fetchedBooks = await booksApi.getBooksWithReservations();
+                        
+                        // Books already include reservation counts from the API
+                        const booksWithReservations = fetchedBooks.map(book => ({
+                            ...book,
+                            hasReservations: (book.reservationCount || 0) > 0
+                        }));
+                        
+                        setBooks(booksWithReservations);
+                        setError(null);
+                    } catch (err) {
+                        console.error("Error fetching books on tab focus:", err);
+                    }
+                };
+                fetchBooks();
             }
         };
-        fetchBooks();
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, []);
 
     // Function to handle refresh
-    const handleRefresh = () => {
-        setLoading(true);
+    const handleRefresh = async () => {
+        setLoading(false); // Don't show full skeleton for manual refresh
+        setIsRefreshing(true); // Show subtle refresh indicator instead
         setError(null);
-        window.location.reload();
-    }
+        try {
+            console.log("Manual refresh triggered...");
+            const fetchedBooks = await booksApi.getBooksWithReservations();
+            
+            // Books already include reservation counts from the API
+            const booksWithReservations = fetchedBooks.map(book => ({
+                ...book,
+                hasReservations: (book.reservationCount || 0) > 0
+            }));
+            
+            setBooks(booksWithReservations);
+            console.log("Books refreshed successfully:", booksWithReservations);
+        } catch (err) {
+            console.error("Error during manual refresh:", err);
+            setError("Failed to refresh books. Please try again later.");
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
 
     // Function to filter books by genre
     const getBooksByGenre = (genres: string[]) => {
@@ -114,41 +181,95 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
     const filteredBooks = getFilteredBooks(books);
     const finalBooks = getSearchedBooks(filteredBooks);
 
+    // Create skeleton loading component
+    const renderSkeletonGrid = (count: number = 10) => {
+        return (
+            <div className="books-grid">
+                {Array.from({ length: count }, (_, index) => (
+                    <BookCardSkeleton key={`skeleton-${index}`} />
+                ))}
+            </div>
+        );
+    };
+
     return (
         <div className="dashboard-content-wrapper">
-            {/* Loading and error states - only show when needed */}
-            {(loading || error) && (
-                <div className="error-message">
-                    {loading && (
-                        <div>
-                            loading...
+            {/* Show skeleton loading when loading */}
+            {loading && !error && (
+                <div className="books-sections">
+                    {/* Popular Books Skeleton */}
+                    <div className="books-section">
+                        <div className="section-header">
+                            <h2 className="section-title">Popular Books</h2>
                         </div>
-                    )}
+                        {renderSkeletonGrid(10)}
+                    </div>
 
-                    {error && (
+                    {/* Recommended Books Skeleton */}
+                    <div className="books-section">
+                        <h2 className="section-title">Recommended for You</h2>
+                        {renderSkeletonGrid(8)}
+                    </div>
+
+                    {/* Fiction Skeleton */}
+                    <div className="books-section">
+                        <h2 className="section-title">Fiction</h2>
+                        {renderSkeletonGrid(6)}
+                    </div>
+
+                    {/* Non-Fiction Skeleton */}
+                    <div className="books-section">
+                        <h2 className="section-title">Non-Fiction</h2>
+                        {renderSkeletonGrid(6)}
+                    </div>
+                </div>
+            )}
+
+            {/* Show error state */}
+            {error && (
+                <div className="error-message">
+                    <div>
                         <div>
-                            <div>
-                                {error}
-                            </div>
-                            <button
-                                className="retry-button"
-                                onClick={handleRefresh}
-                            >
-                                Retry
-                            </button>
+                            {error}
                         </div>
-                    )}
+                        <button
+                            className="retry-button"
+                            onClick={handleRefresh}
+                        >
+                            Retry
+                        </button>
+                    </div>
                 </div>
             )}
 
             {/* Display books by categories if available */}
             {!loading && !error && (
-                <div className="books-sections">
+                <>
+                    {/* Refresh Indicator */}
+                    {isRefreshing && (
+                        <div className="refresh-indicator">
+                            <div className="refresh-spinner"></div>
+                            <span>Syncing library data...</span>
+                        </div>
+                    )}
+                    
+                    <div className="books-sections">
                     {shouldShowAllSections ? (
                         <>
                             {/* Popular Books Section - Always at the top */}
                             <div className="books-section">
-                                <h2 className="section-title">Popular Books</h2>
+                                <div className="section-header">
+                                    <h2 className="section-title">Popular Books</h2>
+                                    <button 
+                                        className="refresh-button" 
+                                        onClick={handleRefresh}
+                                        disabled={loading || isRefreshing}
+                                        title="Refresh book availability"
+                                    >
+                                        <span className={`refresh-icon ${loading || isRefreshing ? 'spinning' : ''}`}>↻</span>
+                                        Refresh
+                                    </button>
+                                </div>
                                 <div className="books-grid">
                                     {books.slice(0, 10).map((book) => (
                                         <BookCard key={`popular-${book.id || book.bookId}`} book={book} />
@@ -322,7 +443,8 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                             )}
                         </div>
                     )}
-                </div>
+                    </div>
+                </>
             )}
         </div>
     );

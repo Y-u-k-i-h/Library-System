@@ -17,11 +17,15 @@ const AUTH_STATES = {
 
 export default function AuthComponent() {
     const [currentState, setCurrentState] = useState(AUTH_STATES.SIGNUP);
+    const [userEmail, setUserEmail] = useState<string>("");
 
     const goToSignUp = () => setCurrentState(AUTH_STATES.SIGNUP);
     const goToLogin = () => setCurrentState(AUTH_STATES.LOGIN);
     const goToForgotPassword = () => setCurrentState(AUTH_STATES.FORGOT_PASSWORD);
-    const goToEnterOtp = () => setCurrentState(AUTH_STATES.ENTER_OTP);
+    const goToEnterOtp = (email?: string) => {
+        if (email) setUserEmail(email);
+        setCurrentState(AUTH_STATES.ENTER_OTP);
+    };
     const goToResetPassword = () => setCurrentState(AUTH_STATES.RESET_PASSWORD);
 
     const headerState = () => {
@@ -57,7 +61,7 @@ export default function AuthComponent() {
                                            onGoToEnterOtp={goToEnterOtp} />;
 
             case AUTH_STATES.ENTER_OTP:
-                return <EnterOtpPage onOtpVerified={goToResetPassword} />;
+                return <EnterOtpPage onOtpVerified={goToResetPassword} email={userEmail} />;
 
             case AUTH_STATES.RESET_PASSWORD:
                 return <ResetPasswordPage onPasswordReset={goToLogin} />;

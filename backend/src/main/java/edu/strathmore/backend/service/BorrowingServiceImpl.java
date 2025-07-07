@@ -18,12 +18,12 @@ import edu.strathmore.backend.repository.UserRepository;
 public class BorrowingServiceImpl implements BorrowingService {
     @Autowired
     private BorrowingRepository borrowingRepository;
-
     @Autowired
     private BookRepository bookRepository;
-
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ReservationService reservationService;
 
     @Override
     public BorrowingDetails borrowBook(long bookId){
@@ -106,6 +106,10 @@ public class BorrowingServiceImpl implements BorrowingService {
         Book book = bd.getBook();
         book.setAvailability(true);
         bookRepository.save(book);
+        
+        // Process reservation queue - this will handle any pending reservations
+        reservationService.processReservationQueue(book);
+        
         return borrowingRepository.save(bd);
     }
 

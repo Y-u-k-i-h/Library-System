@@ -1,11 +1,12 @@
 package edu.strathmore.backend.service;
 
-import edu.strathmore.backend.model.User;
-import edu.strathmore.backend.repository.UserRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import edu.strathmore.backend.model.User;
+import edu.strathmore.backend.repository.UserRepository;
 
 
 @Service
@@ -26,6 +27,10 @@ public class UserService {
     }
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+    
+    public User findByUserCode(String userCode) {
+        return userRepository.findByUserCode(userCode).orElse(null);
     }
 
 
