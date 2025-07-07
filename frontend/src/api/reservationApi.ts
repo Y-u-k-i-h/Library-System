@@ -37,12 +37,27 @@ reservationApiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Token is invalid or expired, remove it and redirect to login
-            localStorage.removeItem('jwtToken');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userCode');
-            localStorage.removeItem('userName');
-            console.warn('Authentication token expired. Please log in again.');
+            // Check if we actually have a token - if not, this might be expected
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                console.log('No token found for reservation API');
+                return Promise.reject(error);
+            }
+            
+            const errorMessage = error.response?.data?.message || '';
+            console.log('401 error in reservation API:', errorMessage);
+            
+            // Only clear auth on definitive token issues
+            if (errorMessage.includes('expired') || errorMessage.includes('invalid') || errorMessage.includes('malformed')) {
+                console.warn('Authentication token expired. Please log in again.');
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userCode');
+                localStorage.removeItem('userName');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 100);
+            }
         }
         return Promise.reject(error);
     }

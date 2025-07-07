@@ -1,0 +1,240 @@
+.users-list-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.users-header h2 {
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 300px;
+}
+
+.search-input {
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    background: white;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #5a75ce;
+    box-shadow: 0 0 0 3px rgba(90, 117, 206, 0.1);
+}
+
+.search-results-count {
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+}
+
+.users-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.user-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #5a75ce;
+}
+
+.section-title {
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.no-users {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.users-table th {
+    background: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 14px;
+}
+
+.users-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+    font-size: 14px;
+}
+
+.users-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.users-table tr.high-strikes {
+    background-color: #fff5f5;
+}
+
+.users-table tr.high-strikes:hover {
+    background-color: #fed7d7;
+}
+
+.user-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #5a75ce;
+}
+
+.borrowed-count .has-books {
+    background: #e8f5e8;
+    color: #2d7d2d;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.borrowed-count .no-books {
+    background: #f8f9fa;
+    color: #6c757d;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.strikes-count .strikes {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.strikes-count .strikes.low {
+    background: #e8f5e8;
+    color: #2d7d2d;
+}
+
+.strikes-count .strikes.medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.strikes-count .strikes.high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    font-size: 16px;
+    color: #666;
+}
+
+.error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 40px;
+    color: #721c24;
+    background: #f8d7da;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+}
+
+.retry-button {
+    padding: 8px 16px;
+    background: #5a75ce;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+    background: #4a63bd;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .users-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-container {
+        min-width: unset;
+    }
+    
+    .users-table {
+        font-size: 12px;
+    }
+    
+    .users-table th,
+    .users-table td {
+        padding: 10px 8px;
+    }
+    
+    .section-title {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .users-table th:nth-child(4),
+    .users-table td:nth-child(4),
+    .users-table th:nth-child(5),
+    .users-table td:nth-child(5) {
+        display: none;
+    }
+    
+    .users-table th:nth-child(3),
+    .users-table td:nth-child(3) {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

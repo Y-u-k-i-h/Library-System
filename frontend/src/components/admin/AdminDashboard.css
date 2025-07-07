@@ -1,52 +1,307 @@
-/* General Reset */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* Container for the entire dashboard */
-.dashboard-container {
+/* Admin Dashboard Container */
+.admin-dashboard-container {
     display: flex;
     height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    overflow: hidden;
 }
 
-/* Sidebar styling */
-.sidebar {
-    width: 220px;
-    background-color: #2c3e50;
-    color: white;
+/* Admin Sidebar - Based on main sidebar design */
+.admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background: #5a75ce;
+    border-right: 1px solid #000000;
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 40;
+    overflow: hidden;
 }
 
-.sidebar h2 {
-    margin-bottom: 30px;
-    font-size: 1.5em;
-    text-align: center;
+.sidebar-contents {
+    padding: 15px 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.sidebar nav ul {
-    list-style: none;
-    padding: 0;
+.sidebar-open {
+    width: 250px !important;
 }
 
-.sidebar nav ul li {
-    margin-bottom: 20px;
+.sidebar-closed {
+    width: 65px !important;
 }
 
-.sidebar nav ul li a {
+.menu-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 15px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    gap: 15px;
+    position: relative;
     color: white;
-    text-decoration: none;
-    font-weight: 500;
-    transition: 0.2s;
+    margin-bottom: 20px;
+    white-space: nowrap;
 }
 
-.sidebar nav ul li a:hover {
-    text-decoration: underline;
-    padding-left: 5px;
+.sidebar-closed .menu-toggle {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+}
+
+.sidebar-closed .sidebar-text,
+.sidebar-closed .nav-text {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.sidebar-open .sidebar-text,
+.sidebar-open .nav-text {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
+}
+
+.menu-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-toggle img {
+    width: 24px;
+    height: 24px;
+    filter: invert(1);
+}
+
+.sidebar-text {
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Navigation Items */
+.nav-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.nav-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 15px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    gap: 15px;
+    position: relative;
+    color: white;
+    white-space: nowrap;
+}
+
+.sidebar-closed .nav-item {
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+}
+
+
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(2px);
+}
+
+.nav-item.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 3px solid #ffffff;
+}
+
+.nav-item img {
+    width: 24px;
+    height: 24px;
+    filter: invert(1);
+}
+
+.nav-text {
+    color: white;
+    font-weight: 400;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.logout-item {
+    margin-top: auto;
+    margin-bottom: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 20px;
+}
+
+.logout-item:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+/* Tooltip for closed sidebar */
+.sidebar-closed .nav-item:hover::after,
+.sidebar-closed .menu-toggle:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 70px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 1;
+    pointer-events: none;
+}
+
+.sidebar-closed .nav-item:hover::before,
+.sidebar-closed .menu-toggle:hover::before {
+    content: '';
+    position: absolute;
+    left: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 6px 6px 0;
+    border-color: transparent #333 transparent transparent;
+    z-index: 1000;
+}
+
+/* Main Content Area */
+.admin-main-content {
+    flex: 1;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    will-change: margin-left;
+}
+
+.content-expanded {
+    margin-left: 250px;
+}
+
+.content-full {
+    margin-left: 65px;
+}
+
+/* Admin Header */
+.admin-header {
+    background: white;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-header h1 {
+    color: #333;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #666;
+}
+
+.admin-user-info span {
+    font-size: 14px;
+}
+
+.role-badge {
+    background: #5a75ce;
+    color: white !important;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px !important;
+    font-weight: 500;
+}
+
+/* Admin Content */
+.admin-content {
+    flex: 1;
+    padding: 30px;
+    background: #f8f9fa;
+    overflow-y: auto;
+}
+
+.admin-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-section h2 {
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    border-bottom: 2px solid #5a75ce;
+    padding-bottom: 10px;
+}
+
+.admin-section p {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        width: 65px !important;
+    }
+    
+    .admin-main-content {
+        margin-left: 65px !important;
+    }
+    
+    .admin-header {
+        padding: 15px 20px;
+    }
+    
+    .admin-header h1 {
+        font-size: 24px;
+    }
+    
+    .admin-content {
+        padding: 20px;
+    }
+    
+    .admin-section {
+        padding: 20px;
+    }
 }
 
 /* Main content styling */

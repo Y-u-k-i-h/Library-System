@@ -32,25 +32,46 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Check for existing authentication on app startup
     useEffect(() => {
-        const token = localStorage.getItem('jwtToken');
-        const userRole = localStorage.getItem('userRole');
-        const userCode = localStorage.getItem('userCode');
-        const userName = localStorage.getItem('userName');
+        const initializeAuth = async () => {
+            try {
+                const token = localStorage.getItem('jwtToken');
+                const userRole = localStorage.getItem('userRole');
+                const userCode = localStorage.getItem('userCode');
+                const userName = localStorage.getItem('userName');
 
-        if (token && userRole && userCode && userName) {
-            setUser({
-                token,
-                role: userRole,
-                userCode,
-                name: userName
-            });
-        }
+                if (token && userRole && userCode && userName) {
+                    // Optionally validate token with backend here
+                    console.log('Restoring authentication from localStorage');
+                    setUser({
+                        token,
+                        role: userRole,
+                        userCode,
+                        name: userName
+                    });
+                } else {
+                    console.log('No valid authentication data found in localStorage');
+                }
+            } catch (error) {
+                console.error('Error initializing auth:', error);
+                // Clear any corrupted data
+                localStorage.removeItem('jwtToken');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('userCode');
+                localStorage.removeItem('userName');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        initializeAuth();
     }, []);
 
     const login = (userData: User) => {
+        console.log('Logging in user:', userData.userCode, userData.role);
         setUser(userData);
         localStorage.setItem('jwtToken', userData.token);
         localStorage.setItem('userRole', userData.role);
@@ -59,6 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     const logout = () => {
+        console.log('Logging out user');
         setUser(null);
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('userRole');
@@ -66,9 +88,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         localStorage.removeItem('userName');
     };
 
-    const isAuthenticated = !!user;
+    const isAuthenticated = !!user && !isLoading;
     const isLibrarian = user?.role === 'LIBRARIAN';
     const isStudent = user?.role === 'STUDENT';
+
+    // Don't render children until auth is initialized
+    if (isLoading) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                fontSize: '16px',
+                color: '#666'
+            }}>
+                Loading...
+            </div>
+        );
+    }
 
     return (
         <AuthContext.Provider value={{

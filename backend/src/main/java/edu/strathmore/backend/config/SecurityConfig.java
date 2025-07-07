@@ -54,6 +54,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/authentication/**").permitAll() // Allow public access to all authentication endpoints
                 .requestMatchers("/api/books/**").authenticated() // Now require authentication for books API
+                .requestMatchers("/api/borrowings/**").authenticated() // Explicitly require authentication for borrowings API
+                .requestMatchers("/api/admin/**").authenticated() // Require authentication for admin API
                 .anyRequest().authenticated() // Require authentication for all other endpoints
             );
 
