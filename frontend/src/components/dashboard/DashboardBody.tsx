@@ -14,6 +14,7 @@ export default function Dashboard({ children }: DashboardProps) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMenuHovered, setIsMenuHovered] = useState(false);
     const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -31,12 +32,17 @@ export default function Dashboard({ children }: DashboardProps) {
         setAppliedFilters(filters);
     };
 
+    const handleSearchChange = (search: string) => {
+        setSearchTerm(search);
+    };
+
     // Render the dashboard with header and sidebar components
     return (
         <div className="dashboard">
             <Header
                 isSidebarOpen={isSidebarOpen}
                 onFiltersChange={handleFiltersChange}
+                onSearchChange={handleSearchChange}
             />
 
             <Sidebar
@@ -48,7 +54,7 @@ export default function Dashboard({ children }: DashboardProps) {
             />
 
             <main className={`dashboard-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-                {children || <DashboardContent appliedFilters={appliedFilters} />}
+                {children || <DashboardContent appliedFilters={appliedFilters} searchTerm={searchTerm} />}
             </main>
 
         </div>

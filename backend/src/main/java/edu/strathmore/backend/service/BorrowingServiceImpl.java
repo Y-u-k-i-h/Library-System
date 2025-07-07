@@ -48,7 +48,7 @@ public class BorrowingServiceImpl implements BorrowingService {
         bd.setBorrower(user);
         bd.setBook(book);
         bd.setBorrowDate(LocalDate.now());
-        bd.setDueDate(LocalDate.now().plusDays(14));
+        bd.setDueDate(LocalDate.now().plusDays(7));
         return borrowingRepository.save(bd);
 
     }

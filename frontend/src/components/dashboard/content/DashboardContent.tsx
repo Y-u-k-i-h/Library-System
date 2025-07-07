@@ -5,9 +5,10 @@ import "./dashboard-content.css";
 
 interface DashboardContentProps {
     appliedFilters: string[];
+    searchTerm?: string;
 }
 
-export default function DashboardContent({ appliedFilters }: DashboardContentProps) {
+export default function DashboardContent({ appliedFilters, searchTerm = "" }: DashboardContentProps) {
     const [books, setBooks] = useState<Book[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -95,9 +96,23 @@ export default function DashboardContent({ appliedFilters }: DashboardContentPro
         });
     };
 
-    // Decide what to show based on filters
-    const shouldShowAllSections = appliedFilters.length === 0;
+    // Function to filter books based on search term
+    const getSearchedBooks = (booksToSearch: Book[]) => {
+        if (!searchTerm.trim()) {
+            return booksToSearch;
+        }
+
+        const searchTermLower = searchTerm.toLowerCase();
+        return booksToSearch.filter(book => {
+            return book.title.toLowerCase().includes(searchTermLower) ||
+                   book.author.toLowerCase().includes(searchTermLower);
+        });
+    };
+
+    // Decide what to show based on filters and search
+    const shouldShowAllSections = appliedFilters.length === 0 && !searchTerm.trim();
     const filteredBooks = getFilteredBooks(books);
+    const finalBooks = getSearchedBooks(filteredBooks);
 
     return (
         <div className="dashboard-content-wrapper">
@@ -285,16 +300,24 @@ export default function DashboardContent({ appliedFilters }: DashboardContentPro
                         /* Filtered Results Section */
                         <div className="books-section">
                             <h2 className="section-title">
-                                Filtered Results ({filteredBooks.length} books found)
+                                {searchTerm.trim() ? 
+                                    appliedFilters.length > 0 ? 
+                                        `Search Results for "${searchTerm}" with filters (${finalBooks.length} books found)` :
+                                        `Search Results for "${searchTerm}" (${finalBooks.length} books found)` :
+                                    `Filtered Results (${finalBooks.length} books found)`
+                                }
                             </h2>
                             <div className="filtered-books-grid">
-                                {filteredBooks.map((book) => (
+                                {finalBooks.map((book) => (
                                     <BookCard key={`filtered-${book.id || book.bookId}`} book={book} />
                                 ))}
                             </div>
-                            {filteredBooks.length === 0 && (
+                            {finalBooks.length === 0 && (
                                 <div className="no-books-message">
-                                    No books match the selected filters. Try adjusting your filters.
+                                    {searchTerm.trim() ? 
+                                        `No books found matching "${searchTerm}". Try searching for a different book title or author.` :
+                                        "No books match the selected filters. Try adjusting your filters."
+                                    }
                                 </div>
                             )}
                         </div>

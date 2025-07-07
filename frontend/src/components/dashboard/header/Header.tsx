@@ -12,6 +12,7 @@ import '../header/Header.css';
 interface HeaderProps {
     isSidebarOpen: boolean;
     onFiltersChange?: (filters: string[]) => void;
+    onSearchChange?: (searchTerm: string) => void;
 }
 
 const FILTER_OPTIONS = {
@@ -44,12 +45,13 @@ const FILTER_OPTIONS = {
     ]
 };
 
-export default function Header({isSidebarOpen, onFiltersChange}: HeaderProps) {
+export default function Header({isSidebarOpen, onFiltersChange, onSearchChange}: HeaderProps) {
 
     {/* State to manage filter dropdown visibility and selected filters */}
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [selectedFilterOptions, setSelectedFilterOptions] = useState<string[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     // Handle filter changes
     const handleFilterChange = (filterValue: string) => {
@@ -82,7 +84,6 @@ export default function Header({isSidebarOpen, onFiltersChange}: HeaderProps) {
     };
 
     const applyFilters = () => {
-        // Apply selected filters and close dropdown with animation
         if (onFiltersChange) {
             onFiltersChange(selectedFilterOptions);
         }
@@ -90,11 +91,10 @@ export default function Header({isSidebarOpen, onFiltersChange}: HeaderProps) {
         setTimeout(() => {
             setIsFilterOpen(false);
             setIsClosing(false);
-        }, 500); // Adjust the timeout to match your CSS transition duration
+        }, 500);
     }
 
     const clearAllFilters = () => {
-        // Clear all selected filters with animation
         setSelectedFilterOptions([]);
         if (onFiltersChange) {
             onFiltersChange([]);
@@ -103,8 +103,30 @@ export default function Header({isSidebarOpen, onFiltersChange}: HeaderProps) {
         setTimeout(() => {
             setIsFilterOpen(false);
             setIsClosing(false);
-        }, 500); // Adjust the timeout to match your CSS transition duration
+        }, 500);
     }
+
+    // Handle search functionality
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newSearchTerm = e.target.value;
+        setSearchTerm(newSearchTerm);
+        if (onSearchChange) {
+            onSearchChange(newSearchTerm);
+        }
+    };
+
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (onSearchChange) {
+            onSearchChange(searchTerm);
+        }
+    };
+
+    const handleSearchClick = () => {
+        if (onSearchChange) {
+            onSearchChange(searchTerm);
+        }
+    };
 
     {/* Render the header component */}
     return (
@@ -191,17 +213,21 @@ export default function Header({isSidebarOpen, onFiltersChange}: HeaderProps) {
 
                 {/* Search Section */}
                 <div className="header-search">
-                    <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Search for books..."
-                    />
-                    <button className="search-button">
-                        <img
-                            src={searchIcon}
-                            alt="Search Icon"
+                    <form onSubmit={handleSearchSubmit}>
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search by book title or author..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
                         />
-                    </button>
+                        <button type="button" className="search-button" onClick={handleSearchClick}>
+                            <img
+                                src={searchIcon}
+                                alt="Search Icon"
+                            />
+                        </button>
+                    </form>
                 </div>
             </div>
 

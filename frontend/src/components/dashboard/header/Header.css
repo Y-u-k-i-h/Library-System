@@ -195,6 +195,12 @@
     transition: all 0.3s ease;
 }
 
+.header-search form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
 .header-search:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
