@@ -12,8 +12,12 @@ import Dashboard from "./pages/Dashboard.tsx";
 import MyBooksContent from "./pages/MyBooksContent.tsx";
 import Reserved from "./pages/Reserved.tsx";
 import NotificationToast from "./components/ui/NotificationToast.tsx";
+import NotificationPopup from "./components/ui/NotificationPopup.tsx";
+import { useNotification } from "./contexts/NotificationContext.tsx";
 
 export default function App() {
+    const { popupNotification, closePopup } = useNotification();
+    
     return (
         <div>
             <BrowserRouter>
@@ -33,6 +37,17 @@ export default function App() {
                     <Route path="*" element={<NoPage />} />
                 </Routes>
                 <NotificationToast />
+                
+                {/* Global Popup Notification */}
+                {popupNotification && (
+                    <NotificationPopup
+                        message={popupNotification.message}
+                        type={popupNotification.type}
+                        isVisible={true}
+                        onClose={closePopup}
+                        duration={4000}
+                    />
+                )}
             </BrowserRouter>
         </div>
     )

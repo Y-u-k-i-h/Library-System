@@ -9,16 +9,19 @@ export interface NotificationItem {
     action?: string; // e.g., 'borrowed', 'returned', 'reserved', 'cancelled'
     bookTitle?: string;
     autoHide?: boolean;
+    showPopup?: boolean; // New field for popup notifications
 }
 
 interface NotificationContextType {
     notifications: NotificationItem[];
     unreadCount: number;
-    showNotification: (message: string, type: 'success' | 'error' | 'warning' | 'info', action?: string, bookTitle?: string, autoHide?: boolean) => void;
+    popupNotification: NotificationItem | null;
+    showNotification: (message: string, type: 'success' | 'error' | 'warning' | 'info', action?: string, bookTitle?: string, autoHide?: boolean, showPopup?: boolean) => void;
     markAsRead: (id: string) => void;
     markAllAsRead: () => void;
     removeNotification: (id: string) => void;
     clearAllNotifications: () => void;
+    closePopup: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -37,13 +40,15 @@ interface NotificationProviderProps {
 
 export const NotificationProvider = ({ children }: NotificationProviderProps) => {
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+    const [popupNotification, setPopupNotification] = useState<NotificationItem | null>(null);
 
     const showNotification = (
         message: string, 
         type: 'success' | 'error' | 'warning' | 'info', 
         action?: string, 
         bookTitle?: string,
-        autoHide: boolean = true
+        autoHide: boolean = true,
+        showPopup: boolean = false
     ) => {
         const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const newNotification: NotificationItem = {
@@ -54,10 +59,17 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
             read: false,
             action,
             bookTitle,
-            autoHide
+            autoHide,
+            showPopup
         };
         
+        // Add to notifications list
         setNotifications(prev => [newNotification, ...prev]);
+
+        // Show popup if requested
+        if (showPopup) {
+            setPopupNotification(newNotification);
+        }
 
         // Auto-remove only toast notifications after 5 seconds
         if (autoHide) {
@@ -65,6 +77,10 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
                 removeNotification(id);
             }, 5000);
         }
+    };
+
+    const closePopup = () => {
+        setPopupNotification(null);
     };
 
     const markAsRead = (id: string) => {
@@ -85,10 +101,16 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
 
     const removeNotification = (id: string) => {
         setNotifications(prev => prev.filter(notification => notification.id !== id));
+        
+        // Close popup if it's the same notification being removed
+        if (popupNotification?.id === id) {
+            setPopupNotification(null);
+        }
     };
 
     const clearAllNotifications = () => {
         setNotifications([]);
+        setPopupNotification(null);
     };
 
     const unreadCount = notifications.filter(n => !n.read && n.autoHide === false).length;
@@ -97,11 +119,13 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
         <NotificationContext.Provider value={{ 
             notifications, 
             unreadCount,
+            popupNotification,
             showNotification, 
             markAsRead, 
             markAllAsRead, 
             removeNotification, 
-            clearAllNotifications 
+            clearAllNotifications,
+            closePopup
         }}>
             {children}
         </NotificationContext.Provider>

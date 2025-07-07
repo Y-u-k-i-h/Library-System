@@ -59,7 +59,8 @@ export default function MyReservations() {
                 'info',
                 'cancelled',
                 reservationToCancel.book.title,
-                true // Toast notification
+                false, // No toast
+                true // Show popup
             );
 
             // Make the API call and wait for response (more natural feeling)
@@ -75,14 +76,15 @@ export default function MyReservations() {
                 'success',
                 'cancelled',
                 reservationToCancel.book.title,
-                true // Toast notification
+                false, // No toast notification
+                true // Show popup only
             );
             showNotification(
                 `You cancelled reservation for "${reservationToCancel.book.title}".`,
                 'success',
                 'cancelled',
                 reservationToCancel.book.title,
-                false // Dropdown notification
+                false // Dropdown notification only
             );
 
             // Trigger background refresh to sync data

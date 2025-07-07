@@ -72,7 +72,8 @@ export default function MyBooks() {
                 'info',
                 'returned',
                 bookToReturn.title,
-                true // Toast notification
+                false, // No toast
+                true // Show popup
             );
 
             // Make the API call and wait for response (more natural feeling)
@@ -88,14 +89,15 @@ export default function MyBooks() {
                 'success',
                 'returned',
                 bookToReturn.title,
-                true // Toast notification
+                false, // No toast notification
+                true // Show popup only
             );
             showNotification(
                 `You returned "${bookToReturn.title}" - Thank you for returning on time!`,
                 'success',
                 'returned',
                 bookToReturn.title,
-                false // Dropdown notification
+                false // Dropdown notification only
             );
 
             // Trigger background refresh to sync other components

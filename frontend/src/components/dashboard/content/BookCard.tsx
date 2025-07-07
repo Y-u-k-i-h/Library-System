@@ -29,8 +29,24 @@ export default function BookCard({ book, onBookUpdated }: BookCardProps) {
             setActionType('borrow');
             setShowConfirmation(true);
         } else {
-            // Check if user has already reserved this book before showing confirmation
+            // Check if user has already borrowed this book
             try {
+                const userBorrowings = await borrowingApi.getCurrentUserBorrowings();
+                const hasBorrowed = userBorrowings.some(borrowing => borrowing.book.bookId === localBook.bookId);
+                
+                if (hasBorrowed) {
+                    showNotification(
+                        `You have already borrowed "${localBook.title}". You cannot reserve a book you currently have borrowed.`,
+                        'warning',
+                        'reserved',
+                        localBook.title,
+                        false,
+                        true // Show popup
+                    );
+                    return;
+                }
+
+                // Check if user has already reserved this book
                 const hasReserved = await reservationApi.hasUserReservedBook(localBook.bookId);
                 if (hasReserved) {
                     showNotification(
@@ -38,14 +54,15 @@ export default function BookCard({ book, onBookUpdated }: BookCardProps) {
                         'warning',
                         'reserved',
                         localBook.title,
-                        false
+                        false,
+                        true // Show popup
                     );
                     return;
                 }
                 setActionType('reserve');
                 setShowConfirmation(true);
             } catch (error) {
-                console.error('Error checking reservation status:', error);
+                console.error('Error checking reservation/borrowing status:', error);
                 showNotification(
                     'Unable to check reservation status. Please try again.',
                     'error',
@@ -93,14 +110,15 @@ export default function BookCard({ book, onBookUpdated }: BookCardProps) {
                     'success',
                     'borrowed',
                     localBook.title,
-                    true // Toast notification
+                    false, // No toast notification
+                    true // Show popup only
                 );
                 showNotification(
                     `You borrowed "${localBook.title}" - Enjoy your reading!`,
                     'success',
                     'borrowed',
                     localBook.title,
-                    false // Dropdown notification
+                    false // Dropdown notification only
                 );
                 
                 // Trigger background refresh to sync other components
@@ -130,14 +148,15 @@ export default function BookCard({ book, onBookUpdated }: BookCardProps) {
                     'success',
                     'reserved',
                     localBook.title,
-                    true // Toast notification
+                    false, // No toast notification
+                    true // Show popup only
                 );
                 showNotification(
                     `You reserved "${localBook.title}" - You'll be notified when available!`,
                     'success',
                     'reserved',
                     localBook.title,
-                    false // Dropdown notification
+                    false // Dropdown notification only
                 );
 
                 // Trigger background refresh to sync exact counts

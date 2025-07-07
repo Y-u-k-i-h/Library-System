@@ -1,0 +1,216 @@
+/* Notification Popup Styles */
+.notification-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 80px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.notification-popup-overlay.show {
+    opacity: 1;
+}
+
+.notification-popup {
+    pointer-events: auto;
+    max-width: 400px;
+    width: 90%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+    transform: translateY(-30px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.notification-popup.slide-in {
+    transform: translateY(0);
+}
+
+.notification-popup.slide-out {
+    transform: translateY(-30px);
+    opacity: 0;
+}
+
+.notification-popup-content {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+}
+
+.notification-popup-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+}
+
+.notification-popup-message {
+    flex: 1;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #333;
+    font-weight: 500;
+}
+
+.notification-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.notification-popup-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #333;
+}
+
+.notification-popup-progress {
+    height: 4px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification-popup-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    animation: progress 4s linear forwards;
+}
+
+@keyframes progress {
+    to {
+        width: 100%;
+    }
+}
+
+/* Type-specific styles */
+.notification-popup.success {
+    border-left: 4px solid #10B981;
+}
+
+.notification-popup.success .notification-popup-icon {
+    background: #10B981;
+}
+
+.notification-popup.success .notification-popup-progress::after {
+    background: #10B981;
+}
+
+.notification-popup.error {
+    border-left: 4px solid #EF4444;
+}
+
+.notification-popup.error .notification-popup-icon {
+    background: #EF4444;
+}
+
+.notification-popup.error .notification-popup-progress::after {
+    background: #EF4444;
+}
+
+.notification-popup.warning {
+    border-left: 4px solid #F59E0B;
+}
+
+.notification-popup.warning .notification-popup-icon {
+    background: #F59E0B;
+}
+
+.notification-popup.warning .notification-popup-progress::after {
+    background: #F59E0B;
+}
+
+.notification-popup.info {
+    border-left: 4px solid #3B82F6;
+}
+
+.notification-popup.info .notification-popup-icon {
+    background: #3B82F6;
+}
+
+.notification-popup.info .notification-popup-progress::after {
+    background: #3B82F6;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .notification-popup-overlay {
+        padding-top: 20px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .notification-popup {
+        width: 100%;
+    }
+    
+    .notification-popup-content {
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .notification-popup-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    
+    .notification-popup-message {
+        font-size: 14px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .notification-popup {
+        background: #1f2937;
+        color: white;
+    }
+    
+    .notification-popup-message {
+        color: #f9fafb;
+    }
+    
+    .notification-popup-close {
+        color: #9ca3af;
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .notification-popup-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #f9fafb;
+    }
+}

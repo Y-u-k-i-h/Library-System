@@ -61,7 +61,7 @@ public class AuthenticationController {
         }
 
         if (!userCode.matches("^(ST|LI|AD)\\d{4}$")) {
-            return ResponseEntity.badRequest().body("User code must start with ST, LI, or AD followed by 4 digits (e.g., ST1234)");
+            return ResponseEntity.badRequest().body("User code must start with ST or LI followed by 4 digits (e.g., ST1234)");
         }
 
         String role = detectRole(userCode);
@@ -102,7 +102,6 @@ public class AuthenticationController {
     private String detectRole(String userCode){
         if (userCode.startsWith("ST")) return "STUDENT";
         if (userCode.startsWith("LI")) return "LIBRARIAN";
-        if (userCode.startsWith("AD")) return "ADMIN";
         return "UNKNOWN";
     }
     @PostMapping("/login")
