@@ -65,6 +65,7 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
@@ -152,6 +153,121 @@
 
 .details-btn:hover {
     background-color: #e5e7eb;
+}
+
+/* Confirmation Modal Styles */
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.confirmation-modal {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.confirmation-header {
+    margin-bottom: 16px;
+}
+
+.confirmation-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.confirmation-content {
+    margin-bottom: 24px;
+}
+
+.confirmation-content p {
+    margin: 0 0 12px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.book-info {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid #3b82f6;
+}
+
+.book-info strong {
+    display: block;
+    color: #1f2937;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.book-info span {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.confirmation-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.cancel-btn,
+.confirm-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.cancel-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.cancel-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.confirm-btn {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.confirm-btn:hover {
+    background-color: #2563eb;
+}
+
+.confirm-btn:active {
+    background-color: #1d4ed8;
+}
+
+.cancel-btn:disabled,
+.confirm-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancel-btn:disabled:hover,
+.confirm-btn:disabled:hover {
+    background-color: inherit;
 }
 
 /* Responsive design */

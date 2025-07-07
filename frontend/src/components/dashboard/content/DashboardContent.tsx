@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { booksApi, type Book } from "../../../api/booksApi";
-import { authUtils } from "../../../api/authApi";
 import BookCard from "./BookCard";
 import "./dashboard-content.css";
 
@@ -12,7 +11,6 @@ export default function DashboardContent({ appliedFilters }: DashboardContentPro
     const [books, setBooks] = useState<Book[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [currentUser, setCurrentUser] = useState(authUtils.getCurrentUser());
 
     useEffect(() => {
         const fetchBooks = async () => {

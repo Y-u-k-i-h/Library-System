@@ -1,11 +1,15 @@
-import {useState} from "react";
+import {useState, type ReactNode} from "react";
 
 import "./dashboard.css";
 import Header from "./header/Header.tsx";
 import Sidebar from "./sidebar/Sidebar.tsx";
 import DashboardContent from "./content/DashboardContent.tsx";
 
-export default function Dashboard() {
+interface DashboardProps {
+    children?: ReactNode;
+}
+
+export default function Dashboard({ children }: DashboardProps) {
     // UseState to manage the sidebar toggle state
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMenuHovered, setIsMenuHovered] = useState(false);
@@ -44,7 +48,7 @@ export default function Dashboard() {
             />
 
             <main className={`dashboard-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-                <DashboardContent appliedFilters={appliedFilters} />
+                {children || <DashboardContent appliedFilters={appliedFilters} />}
             </main>
 
         </div>

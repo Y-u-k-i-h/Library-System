@@ -1,4 +1,4 @@
-import DashboardBody from "../../components/dashboard/DashboardBody.tsx"
+import DashboardBody from "../components/dashboard/DashboardBody.tsx"
 
 export default function Dashboard() {
     return (

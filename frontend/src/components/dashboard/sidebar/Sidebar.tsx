@@ -62,7 +62,7 @@ export default function Sidebar({
                    onClick={toggleSidebar}
                    onMouseEnter={onMenuHover}
                    onMouseLeave={onMenuLeave}
-
+                   data-tooltip="Menu"
                >
                    <img
                        src={getMenuIcon()}
@@ -73,8 +73,8 @@ export default function Sidebar({
                </div>
 
                 <div className="nav-items-container">
-                    <div className="nav-item" onClick={() => handleNavigation('/dashboard')}>
-                        <img 
+                    <div className="nav-item" onClick={() => handleNavigation('/dashboard')} data-tooltip="Dashboard">
+                        <img
                             src={gridIcon}
                             alt="Dashboard Icon"
                             className="nav-icon"
@@ -82,8 +82,8 @@ export default function Sidebar({
                         <div className="nav-text">Dashboard</div>
                     </div>
 
-                    <div className="nav-item" onClick={() => handleNavigation('/my-books')}>
-                        <img 
+                    <div className="nav-item" onClick={() => handleNavigation('/my-books')} data-tooltip="My Books">
+                        <img
                             src={booksIcon}
                             alt="Books Icon"
                             className="nav-icon"
@@ -91,8 +91,8 @@ export default function Sidebar({
                         <div className="nav-text">My Books</div>
                     </div>
 
-                    <div className="nav-item" onClick={() => handleNavigation('/fines')}>
-                        <img 
+                    <div className="nav-item" onClick={() => handleNavigation('/fines')} data-tooltip="Fines & Fees">
+                        <img
                             src={moneyIcon}
                             alt="Money Icon"
                             className="nav-icon"
@@ -100,8 +100,8 @@ export default function Sidebar({
                         <div className="nav-text">Fined & Fees</div>
                     </div>
 
-                    <div className="nav-item" onClick={() => handleNavigation('/reservations')}>
-                        <img 
+                    <div className="nav-item" onClick={() => handleNavigation('/reservations')} data-tooltip="Reserved Books">
+                        <img
                             src={reservedIcon}
                             alt="Reserved Icon"
                             className="nav-icon"
@@ -109,8 +109,8 @@ export default function Sidebar({
                         <div className="nav-text">Reserved Books</div>
                     </div>
 
-                    <div className="nav-item" onClick={() => handleNavigation('/history')}>
-                        <img 
+                    <div className="nav-item" onClick={() => handleNavigation('/history')} data-tooltip="History">
+                        <img
                             src={historyIcon}
                             alt="History Icon"
                             className="nav-icon"
@@ -118,8 +118,8 @@ export default function Sidebar({
                         <div className="nav-text">History</div>
                     </div>
                     
-                    <div className="nav-item" onClick={() => handleNavigation('/profile')}>
-                        <img 
+                    <div className="nav-item" onClick={() => handleNavigation('/profile')} data-tooltip="Profile">
+                        <img
                             src={profileIcon}
                             alt="Profile Icon"
                             className="nav-icon"
@@ -127,8 +127,8 @@ export default function Sidebar({
                         <div className="nav-text">Profile</div>
                     </div>
 
-                    <div className="nav-item" onClick={() => handleNavigation('/settings')}>
-                        <img 
+                    <div className="nav-item" onClick={() => handleNavigation('/settings')} data-tooltip="Settings">
+                        <img
                             src={settingsIcon}
                             alt="Settings Icon"
                             className="nav-icon"
@@ -136,8 +136,8 @@ export default function Sidebar({
                         <div className="nav-text">Settings</div>
                     </div>
 
-                    <div className="nav-item" onClick={handleLogout}>
-                        <img 
+                    <div className="nav-item" onClick={handleLogout} data-tooltip="Logout">
+                        <img
                             src={doorIcon}
                             alt="Logout Icon"
                             className="nav-icon"

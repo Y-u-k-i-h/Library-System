@@ -35,18 +35,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   HttpServletResponse response, 
                                   FilterChain filterChain) throws ServletException, IOException {
         
-        // Get JWT token from Authorization header
-        String authToken = getTokenFromRequest(request);
+        System.out.println("Debug - JWT Filter - Processing request: " + request.getRequestURI());
         
-        if (authToken != null && jwtUtils.validateJwtToken(authToken)) {
-            // Extract username from token
-            String username = jwtUtils.getUsernameFromJwtToken(authToken);
+        try {
+            // Get JWT token from Authorization header
+            String authToken = getTokenFromRequest(request);
             
-            // Load user details
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            System.out.println("Debug - JWT Filter - Token found: " + (authToken != null));
             
-            // Validate token with user details
-            if (jwtUtils.validateJwtToken(authToken, userDetails)) {
+            if (authToken != null && jwtUtils.validateJwtToken(authToken) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                System.out.println("Debug - JWT Filter - Token is valid");
+                
+                // Extract username from token
+                String username = jwtUtils.getUsernameFromJwtToken(authToken);
+                System.out.println("Debug - JWT Filter - Username from token: " + username);
+                
+                // Load user details
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                System.out.println("Debug - JWT Filter - User details loaded successfully");
+                
                 // Create authentication token
                 UsernamePasswordAuthenticationToken authentication = 
                     new UsernamePasswordAuthenticationToken(
@@ -60,7 +67,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 
                 // Set authentication in SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("Debug - JWT Filter - Authentication set in SecurityContext");
+            } else {
+                if (authToken != null) {
+                    System.out.println("Debug - JWT Filter - Token validation failed");
+                } else {
+                    System.out.println("Debug - JWT Filter - No token found in request");
+                }
             }
+        } catch (Exception e) {
+            System.err.println("Debug - JWT Filter - Error during authentication: " + e.getMessage());
+            e.printStackTrace();
         }
         
         // Continue with the filter chain
@@ -74,8 +91,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         
+        System.out.println("Debug - JWT Filter - Authorization header: " + bearerToken);
+        
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7); // Remove "Bearer " prefix
+            String token = bearerToken.substring(7); // Remove "Bearer " prefix
+            System.out.println("Debug - JWT Filter - Extracted token length: " + token.length());
+            return token;
         }
         
         return null;

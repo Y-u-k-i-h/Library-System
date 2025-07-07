@@ -1,16 +1,18 @@
 package edu.strathmore.backend.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import edu.strathmore.backend.model.Book;
 import edu.strathmore.backend.model.BorrowingDetails;
 import edu.strathmore.backend.model.User;
 import edu.strathmore.backend.repository.BookRepository;
 import edu.strathmore.backend.repository.BorrowingRepository;
 import edu.strathmore.backend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class BorrowingServiceImpl implements BorrowingService {
@@ -24,14 +26,18 @@ public class BorrowingServiceImpl implements BorrowingService {
     private UserRepository userRepository;
 
     @Override
-    public BorrowingDetails borrowBook(long userId, long id){
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Book book = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
+    public BorrowingDetails borrowBook(long bookId){
+        // Get the authenticated user from the security context
+        String authenticatedUserCode = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserCode(authenticatedUserCode)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + authenticatedUserCode));
+        
+        Book book = bookRepository.findByBookId(bookId).orElseThrow(() -> new RuntimeException("Book not found with bookId: " + bookId));
 
         if(!book.isAvailability()){
             throw new RuntimeException("Book is not available");
         }
-        long currentBooks = borrowingRepository.countByBorrowerIdAndReturnDateIsNull(userId);
+        long currentBooks = borrowingRepository.countByBorrowerIdAndReturnDateIsNull(user.getId());
         if(currentBooks >= 5){
             throw new RuntimeException("Maximum Limit on Books borrowed");
         }
@@ -65,7 +71,42 @@ public class BorrowingServiceImpl implements BorrowingService {
     @Override
     public List<BorrowingDetails> getCurrentBorrowingsByUser(long userId){
         return borrowingRepository.findByBorrowerIdAndReturnDateIsNull(userId);
+    }
 
+    @Override
+    public List<BorrowingDetails> getCurrentUserBorrowings(){
+        // Get the authenticated user from the security context
+        String authenticatedUserCode = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserCode(authenticatedUserCode)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + authenticatedUserCode));
+        
+        return borrowingRepository.findByBorrowerIdAndReturnDateIsNull(user.getId());
+    }
+
+    @Override
+    public BorrowingDetails returnUserBook(long borrowingId){
+        // Get the authenticated user from the security context
+        String authenticatedUserCode = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserCode(authenticatedUserCode)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + authenticatedUserCode));
+        
+        BorrowingDetails bd = borrowingRepository.findById(borrowingId).orElseThrow(()
+                -> new RuntimeException("Borrowing record not found"));
+
+        // Verify that the borrowing belongs to the authenticated user
+        if (bd.getBorrower().getId() != user.getId()) {
+            throw new RuntimeException("You can only return your own borrowed books");
+        }
+
+        if(bd.getReturnDate() != null){
+            throw new RuntimeException("Book is already returned");
+        }
+        
+        bd.setReturnDate(LocalDate.now());
+        Book book = bd.getBook();
+        book.setAvailability(true);
+        bookRepository.save(book);
+        return borrowingRepository.save(bd);
     }
 
 }
