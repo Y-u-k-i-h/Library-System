@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { reservationApi, type Reservation } from "../../../api/reservationApi";
 import { useNotification } from "../../../contexts/NotificationContext";
+import { useDataRefresh } from "../../../contexts/DataRefreshContext";
 import "./MyBooks.css";
 
 export default function MyReservations() {
@@ -11,6 +12,7 @@ export default function MyReservations() {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [reservationToCancel, setReservationToCancel] = useState<Reservation | null>(null);
     const { showNotification } = useNotification();
+    const { reservationsRefreshTrigger, triggerReservationsRefresh } = useDataRefresh();
 
     const fetchReservations = async () => {
         try {
@@ -32,6 +34,10 @@ export default function MyReservations() {
         fetchReservations();
     }, []);
 
+    useEffect(() => {
+        fetchReservations();
+    }, [reservationsRefreshTrigger]); // Re-fetch when reservations refresh is triggered specifically
+
     const handleCancelReservation = (reservation: Reservation) => {
         setReservationToCancel(reservation);
         setShowCancelModal(true);
@@ -42,14 +48,26 @@ export default function MyReservations() {
 
         try {
             setCancellingId(reservationToCancel.id);
-            await reservationApi.cancelReservation(reservationToCancel.id);
-            
-            // Remove the cancelled reservation from the list
-            setReservations(prev => prev.filter(r => r.id !== reservationToCancel.id));
             
             // Close modal and reset state
             setShowCancelModal(false);
             setReservationToCancel(null);
+            
+            // Show processing notification
+            showNotification(
+                `Cancelling reservation for "${reservationToCancel.book.title}"...`,
+                'info',
+                'cancelled',
+                reservationToCancel.book.title,
+                true // Toast notification
+            );
+
+            // Make the API call and wait for response (more natural feeling)
+            await reservationApi.cancelReservation(reservationToCancel.id);
+            console.log('Reservation cancelled successfully');
+            
+            // Remove the cancelled reservation from the list after successful API call
+            setReservations(prev => prev.filter(r => r.id !== reservationToCancel.id));
             
             // Show success notifications
             showNotification(
@@ -66,9 +84,34 @@ export default function MyReservations() {
                 reservationToCancel.book.title,
                 false // Dropdown notification
             );
-        } catch (err) {
-            console.error("Error cancelling reservation:", err);
-            showNotification("Failed to cancel reservation. Please try again.", 'error', 'cancelled', reservationToCancel?.book.title, false);
+
+            // Trigger background refresh to sync data
+            triggerReservationsRefresh();
+
+        } catch (error: any) {
+            console.error("Error cancelling reservation:", error);
+            
+            // Handle specific error cases
+            if (error.response?.status === 404) {
+                // Reservation was already cancelled, remove it from the list
+                setReservations(prev => prev.filter(r => r.id !== reservationToCancel.id));
+                showNotification(
+                    `Reservation for "${reservationToCancel.book.title}" was already cancelled.`,
+                    'info',
+                    'cancelled',
+                    reservationToCancel.book.title,
+                    false
+                );
+            } else {
+                // Show error notification for failures
+                showNotification(
+                    `Failed to cancel reservation for "${reservationToCancel.book.title}". Please try again.`,
+                    'error',
+                    'cancelled',
+                    reservationToCancel.book.title,
+                    false
+                );
+            }
         } finally {
             setCancellingId(null);
         }

@@ -15,7 +15,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const { refreshTrigger } = useDataRefresh();
+    const { booksRefreshTrigger } = useDataRefresh();
 
     const fetchBooks = async (showLoadingState = true) => {
         try {
@@ -49,30 +49,40 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
     useEffect(() => {
         // Initial fetch or refresh when trigger changes
         fetchBooks();
-    }, [refreshTrigger]);
+    }, [booksRefreshTrigger]);
 
-    // Refresh when user returns to the tab
+    useEffect(() => {
+        // Set up auto-refresh every 30 seconds for silent background updates
+        const intervalId = setInterval(async () => {
+            console.log("Auto-refreshing books silently...");
+            try {
+                const fetchedBooks = await booksApi.getBooksWithReservations();
+                
+                // Books already include reservation counts from the API
+                const booksWithReservations = fetchedBooks.map(book => ({
+                    ...book,
+                    hasReservations: (book.reservationCount || 0) > 0
+                }));
+                
+                setBooks(booksWithReservations);
+                setError(null);
+                console.log("Silent refresh completed");
+            } catch (err) {
+                console.error("Error during silent auto-refresh:", err);
+                // Don't show error for background refreshes
+            }
+        }, 30000); // 30 seconds
+
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []);
+
+    // Refresh when user returns to the tab (also silent)
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (!document.hidden) {
-                console.log("Tab became visible, refreshing books...");
-                const fetchBooks = async () => {
-                    try {
-                        const fetchedBooks = await booksApi.getBooksWithReservations();
-                        
-                        // Books already include reservation counts from the API
-                        const booksWithReservations = fetchedBooks.map(book => ({
-                            ...book,
-                            hasReservations: (book.reservationCount || 0) > 0
-                        }));
-                        
-                        setBooks(booksWithReservations);
-                        setError(null);
-                    } catch (err) {
-                        console.error("Error fetching books on tab focus:", err);
-                    }
-                };
-                fetchBooks();
+                console.log("Tab became visible, refreshing books silently...");
+                fetchBooks(false);
             }
         };
 
@@ -80,29 +90,19 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, []);
 
-    // Function to handle refresh
     const handleRefresh = async () => {
-        setLoading(false); // Don't show full skeleton for manual refresh
-        setIsRefreshing(true); // Show subtle refresh indicator instead
-        setError(null);
-        try {
-            console.log("Manual refresh triggered...");
-            const fetchedBooks = await booksApi.getBooksWithReservations();
-            
-            // Books already include reservation counts from the API
-            const booksWithReservations = fetchedBooks.map(book => ({
-                ...book,
-                hasReservations: (book.reservationCount || 0) > 0
-            }));
-            
-            setBooks(booksWithReservations);
-            console.log("Books refreshed successfully:", booksWithReservations);
-        } catch (err) {
-            console.error("Error during manual refresh:", err);
-            setError("Failed to refresh books. Please try again later.");
-        } finally {
-            setIsRefreshing(false);
-        }
+        fetchBooks(false); // Manual refresh doesn't need full loading state
+    };
+
+    // Function to handle book updates from BookCard optimistic updates
+    const handleBookUpdate = (bookId: number, updates: Partial<Book>) => {
+        setBooks(prevBooks => 
+            prevBooks.map(book => 
+                book.bookId === bookId 
+                    ? { ...book, ...updates }
+                    : book
+            )
+        );
     };
 
     // Function to filter books by genre
@@ -272,7 +272,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 </div>
                                 <div className="books-grid">
                                     {books.slice(0, 10).map((book) => (
-                                        <BookCard key={`popular-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`popular-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {books.length === 0 && (
@@ -287,7 +287,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Recommended for You</h2>
                                 <div className="books-grid">
                                     {books.slice(5, 15).map((book) => (
-                                        <BookCard key={`recommended-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`recommended-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {books.length === 0 && (
@@ -302,7 +302,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Fiction</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Fiction']).map((book) => (
-                                        <BookCard key={`fiction-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`fiction-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Fiction']).length === 0 && (
@@ -317,7 +317,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Non-Fiction</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Non-Fiction']).map((book) => (
-                                        <BookCard key={`nonfiction-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`nonfiction-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Non-Fiction']).length === 0 && (
@@ -332,7 +332,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Textbooks</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Textbook']).map((book) => (
-                                        <BookCard key={`textbook-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`textbook-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Textbook']).length === 0 && (
@@ -347,7 +347,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Biography</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Biography']).map((book) => (
-                                        <BookCard key={`biography-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`biography-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Biography']).length === 0 && (
@@ -362,7 +362,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Poetry</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Poetry']).map((book) => (
-                                        <BookCard key={`poetry-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`poetry-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Poetry']).length === 0 && (
@@ -377,7 +377,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Children's Literature</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Children\'s Literature']).map((book) => (
-                                        <BookCard key={`children-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`children-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Children\'s Literature']).length === 0 && (
@@ -392,7 +392,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Research Papers</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Research Paper']).map((book) => (
-                                        <BookCard key={`research-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`research-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Research Paper']).length === 0 && (
@@ -407,7 +407,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                                 <h2 className="section-title">Atlas & Maps</h2>
                                 <div className="books-grid">
                                     {getBooksByGenre(['Atlas/Maps']).map((book) => (
-                                        <BookCard key={`atlas-${book.id || book.bookId}`} book={book} />
+                                        <BookCard key={`atlas-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                     ))}
                                 </div>
                                 {getBooksByGenre(['Atlas/Maps']).length === 0 && (
@@ -430,7 +430,7 @@ export default function DashboardContent({ appliedFilters, searchTerm = "" }: Da
                             </h2>
                             <div className="filtered-books-grid">
                                 {finalBooks.map((book) => (
-                                    <BookCard key={`filtered-${book.id || book.bookId}`} book={book} />
+                                    <BookCard key={`filtered-${book.id || book.bookId}`} book={book} onBookUpdated={handleBookUpdate} />
                                 ))}
                             </div>
                             {finalBooks.length === 0 && (
