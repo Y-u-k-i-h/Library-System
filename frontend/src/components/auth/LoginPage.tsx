@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/authApi";
+import { useAuth } from "../../contexts/AuthContext";
 
 import idIcon from "../../assets/auth-assets/idCard.svg";
 import passwordIcon from "../../assets/auth-assets/password.svg";
@@ -20,6 +21,7 @@ type LoginFormData = {
 
 export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentState, standalone = false }: LoginPageProps) {
     const navigate = useNavigate();
+    const { login: authLogin } = useAuth();
     const [LoginFormData, setLoginFormData] = useState<LoginFormData>({
         idNumber: "",
         password: ""
@@ -57,15 +59,23 @@ export default function LoginPage({ onGoToSignUp, onGoToForgotPassword, currentS
         }
 
         try {
-        const result = await login(LoginData);
-        if (result) {
-            alert("Login successful! Welcome");
-            navigate("/dashboard"); // Redirect to home page or dashboard
+            const result = await login(LoginData);
+            if (result) {
+                // Update auth context with user data
+                authLogin({
+                    userCode: result.userCode,
+                    name: result.name,
+                    role: result.role,
+                    token: result.token
+                });
+                
+                alert("Login successful! Welcome");
+                navigate("/dashboard"); // Redirect to dashboard
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+            alert("Login failed. Please check your ID and password.");
         }
-    } catch (error) {
-        console.error("Login failed:", error);
-        alert("Login failed. Please check your ID and password.");
-    }
     };
 
 

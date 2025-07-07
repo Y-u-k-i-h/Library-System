@@ -1,24 +1,23 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { authUtils } from '../../api/authApi';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
-    requiredRole?: string;
+    requireLibrarian?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
-    const isAuthenticated = authUtils.isAuthenticated();
-    const currentUser = authUtils.getCurrentUser();
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireLibrarian = false }) => {
+    const { isAuthenticated, isLibrarian } = useAuth();
 
     if (!isAuthenticated) {
         // Redirect to login if not authenticated
         return <Navigate to="/login" replace />;
     }
 
-    if (requiredRole && currentUser.role !== requiredRole) {
-        // Redirect to unauthorized page if role doesn't match
-        return <Navigate to="/unauthorized" replace />;
+    if (requireLibrarian && !isLibrarian) {
+        // Redirect to regular dashboard if librarian access required but user is not librarian
+        return <Navigate to="/dashboard" replace />;
     }
 
     return <>{children}</>;

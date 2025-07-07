@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { DataRefreshProvider } from './contexts/DataRefreshContext'
+import { AuthProvider } from './contexts/AuthContext'
 
 import App from './App.tsx'
 
@@ -13,11 +14,13 @@ if (!rootElement) {
     const root = createRoot(rootElement);
     root.render (
         <StrictMode>
-            <DataRefreshProvider>
-                <NotificationProvider>
-                    <App />
-                </NotificationProvider>
-            </DataRefreshProvider>
+            <AuthProvider>
+                <DataRefreshProvider>
+                    <NotificationProvider>
+                        <App />
+                    </NotificationProvider>
+                </DataRefreshProvider>
+            </AuthProvider>
         </StrictMode>
     );
 }

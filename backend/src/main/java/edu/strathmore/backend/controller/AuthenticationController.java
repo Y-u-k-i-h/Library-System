@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.strathmore.backend.model.AdminUser;
 import edu.strathmore.backend.model.Login;
 import edu.strathmore.backend.model.Signup;
 import edu.strathmore.backend.model.User;
@@ -46,6 +47,7 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody Signup signup) {
+        System.out.println("DEBUG: Signup endpoint called for user: " + signup.getUserCode());
         String userCode = signup.getUserCode();
 
         if (!signup.getEmail().toLowerCase().endsWith("@strathmore.edu")) {
@@ -81,16 +83,26 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().body("Password must be at least 8 characters long and include upper case, lower case, and a number");
         }
 
-
-        User user = new User();
+        User user;
+        
+        // Create AdminUser for librarians, regular User for students
+        if (role.equals("LIBRARIAN")) {
+            System.out.println("DEBUG: Creating AdminUser for librarian");
+            user = new AdminUser();
+        } else {
+            System.out.println("DEBUG: Creating regular User for student");
+            user = new User();
+        }
+        
         user.setUserCode(userCode);
         user.setFname(signup.getFname());
         user.setLname(signup.getLname());
         user.setPhone(signup.getPhone());
         user.setEmail(signup.getEmail());
-        user.setGender(signup.getGender());
-        user.setAddress(signup.getAddress());
-        user.setDateOfBirth(signup.getDateOfBirth());
+        // Set optional fields with defaults if not provided
+        user.setGender(signup.getGender() != null ? signup.getGender() : "Not specified");
+        user.setAddress(signup.getAddress() != null ? signup.getAddress() : "Not provided");
+        user.setDateOfBirth(signup.getDateOfBirth()); // Can be null
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(role);
 

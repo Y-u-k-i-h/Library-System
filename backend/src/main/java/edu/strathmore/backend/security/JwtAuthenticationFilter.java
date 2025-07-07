@@ -35,25 +35,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                   HttpServletResponse response, 
                                   FilterChain filterChain) throws ServletException, IOException {
         
-        System.out.println("Debug - JWT Filter - Processing request: " + request.getRequestURI());
+        // Bypass JWT validation for authentication endpoints
+        String requestURI = request.getRequestURI();
+        System.out.println("DEBUG: JWT Filter processing: " + requestURI);
         
-        try {
-            // Get JWT token from Authorization header
-            String authToken = getTokenFromRequest(request);
+        if (requestURI.startsWith("/authentication/")) {
+            System.out.println("DEBUG: Bypassing JWT validation for authentication endpoint");
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
+        System.out.println("DEBUG: Processing JWT validation for: " + requestURI);
+        
+        // Get JWT token from Authorization header
+        String authToken = getTokenFromRequest(request);
+        
+        if (authToken != null && jwtUtils.validateJwtToken(authToken)) {
+            // Extract username from token
+            String username = jwtUtils.getUsernameFromJwtToken(authToken);
             
-            System.out.println("Debug - JWT Filter - Token found: " + (authToken != null));
+            // Load user details
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             
-            if (authToken != null && jwtUtils.validateJwtToken(authToken) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                System.out.println("Debug - JWT Filter - Token is valid");
-                
-                // Extract username from token
-                String username = jwtUtils.getUsernameFromJwtToken(authToken);
-                System.out.println("Debug - JWT Filter - Username from token: " + username);
-                
-                // Load user details
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                System.out.println("Debug - JWT Filter - User details loaded successfully");
-                
+            // Validate token with user details
+            if (jwtUtils.validateJwtToken(authToken, userDetails)) {
                 // Create authentication token
                 UsernamePasswordAuthenticationToken authentication = 
                     new UsernamePasswordAuthenticationToken(
@@ -67,17 +72,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 
                 // Set authentication in SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("Debug - JWT Filter - Authentication set in SecurityContext");
-            } else {
-                if (authToken != null) {
-                    System.out.println("Debug - JWT Filter - Token validation failed");
-                } else {
-                    System.out.println("Debug - JWT Filter - No token found in request");
-                }
             }
-        } catch (Exception e) {
-            System.err.println("Debug - JWT Filter - Error during authentication: " + e.getMessage());
-            e.printStackTrace();
         }
         
         // Continue with the filter chain
@@ -91,12 +86,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         
-        System.out.println("Debug - JWT Filter - Authorization header: " + bearerToken);
-        
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            String token = bearerToken.substring(7); // Remove "Bearer " prefix
-            System.out.println("Debug - JWT Filter - Extracted token length: " + token.length());
-            return token;
+            return bearerToken.substring(7); // Remove "Bearer " prefix
         }
         
         return null;

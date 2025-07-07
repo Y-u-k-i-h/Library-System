@@ -14,6 +14,7 @@ import Reserved from "./pages/Reserved.tsx";
 import NotificationToast from "./components/ui/NotificationToast.tsx";
 import NotificationPopup from "./components/ui/NotificationPopup.tsx";
 import { useNotification } from "./contexts/NotificationContext.tsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 
 export default function App() {
     const { popupNotification, closePopup } = useNotification();
@@ -31,9 +32,21 @@ export default function App() {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/enter-otp" element={<EnterOtp />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/my-books" element={<MyBooksContent />} />
-                    <Route path="/reservations" element={<Reserved />} />
+                    <Route path="/dashboard" element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/my-books" element={
+                        <ProtectedRoute>
+                            <MyBooksContent />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/reservations" element={
+                        <ProtectedRoute>
+                            <Reserved />
+                        </ProtectedRoute>
+                    } />
                     <Route path="*" element={<NoPage />} />
                 </Routes>
                 <NotificationToast />

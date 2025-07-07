@@ -3,7 +3,6 @@ package edu.strathmore.backend.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -53,10 +52,8 @@ public class SecurityConfig {
                 org.springframework.security.config.http.SessionCreationPolicy.STATELESS
             )) // Make it stateless for REST API
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow all OPTIONS requests for CORS preflight
                 .requestMatchers("/authentication/**").permitAll() // Allow public access to all authentication endpoints
                 .requestMatchers("/api/books/**").authenticated() // Now require authentication for books API
-                .requestMatchers("/api/borrowings/**").authenticated() // Explicitly require authentication for borrowings API
                 .anyRequest().authenticated() // Require authentication for all other endpoints
             );
 

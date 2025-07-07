@@ -1,6 +1,16 @@
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
 
 export default function AdminDashboard() {
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     return (
         <div className="dashboard-container">
             {/* Sidebar */}
@@ -24,8 +34,8 @@ export default function AdminDashboard() {
             <div className="main-content">
                 {/* Topbar */}
                 <div className="topbar">
-                    <span>Welcome, Jason Wachira</span>
-                    <button className="logout-button">Logout</button>
+                    <span>Welcome, {user?.name || 'Admin'} | <strong>Librarian Portal</strong></span>
+                    <button className="logout-button" onClick={handleLogout}>Logout</button>
                 </div>
 
                 {/* Dashboard */}

@@ -1,4 +1,6 @@
 import {useState} from "react";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 import uniLogo from "../../../assets/dashboard-assets/uniLogo.png";
 import userPic from "../../../assets/dashboard-assets/userPic.svg";
@@ -46,6 +48,8 @@ const FILTER_OPTIONS = {
 };
 
 export default function Header({isSidebarOpen, onFiltersChange, onSearchChange}: HeaderProps) {
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     {/* State to manage filter dropdown visibility and selected filters */}
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -126,6 +130,11 @@ export default function Header({isSidebarOpen, onFiltersChange, onSearchChange}:
         if (onSearchChange) {
             onSearchChange(searchTerm);
         }
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
     };
 
     {/* Render the header component */}
@@ -253,14 +262,14 @@ export default function Header({isSidebarOpen, onFiltersChange, onSearchChange}:
                     <NotificationDropdown />
                 </div>
 
-                <div className="header-user">
+                <div className="header-user" onClick={handleLogout} style={{ cursor: 'pointer' }} title="Click to logout">
                     <div className="profile-button">
                         <img
                             src={userPic}
                             alt="User Profile Icon"
                         />
                     </div>
-                    <span>John Doe</span>
+                    <span>{user?.name || 'Student'} | Student</span>
                 </div>
             </div>
         </header>
