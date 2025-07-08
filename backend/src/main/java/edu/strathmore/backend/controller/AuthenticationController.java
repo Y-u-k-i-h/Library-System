@@ -144,6 +144,7 @@ public class AuthenticationController {
             response.put("role", user.getRole());
             response.put("userCode", user.getUserCode());
             response.put("name", user.getFname() + " " + user.getLname());
+            response.put("userId", String.valueOf(user.getUser_id()));
 
             return ResponseEntity.ok(response);
 

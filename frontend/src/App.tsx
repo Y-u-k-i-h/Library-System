@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import MyBooksContent from "./pages/MyBooksContent.tsx";
 import Reserved from "./pages/Reserved.tsx";
 import History from "./pages/History.tsx";
+import Profile from "./pages/Profile.tsx";
 import NotificationToast from "./components/ui/NotificationToast.tsx";
 import NotificationPopup from "./components/ui/NotificationPopup.tsx";
 import { useNotification } from "./contexts/NotificationContext.tsx";
@@ -51,6 +52,11 @@ export default function App() {
                     <Route path="/history" element={
                         <ProtectedRoute>
                             <History />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/profile" element={
+                        <ProtectedRoute>
+                            <Profile />
                         </ProtectedRoute>
                     } />
                     <Route path="*" element={<NoPage />} />

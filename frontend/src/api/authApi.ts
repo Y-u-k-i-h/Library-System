@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const BASE_URL = "http://localhost:8080/authentication";
+const API_BASE_URL = "http://localhost:8080/api";
 
 const authApiClient = axios.create({
     baseURL: BASE_URL,
@@ -10,6 +11,30 @@ const authApiClient = axios.create({
         "Accept": "application/json"
     }
 });
+
+// Create a separate client for authenticated API calls
+const userApiClient = axios.create({
+    baseURL: API_BASE_URL,
+    timeout: 5000,
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+});
+
+// Add interceptor for user API client to include JWT token
+userApiClient.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 interface SignupData {
     fname: string;
@@ -31,6 +56,17 @@ interface LoginResponse {
     role: string;
     userCode: string;
     name: string;
+}
+
+export interface UserProfile {
+    id: number;
+    user_id: number;
+    userCode: string;
+    fname: string;
+    lname: string;
+    email: string;
+    phone: number;
+    role: string;
 }
 
 interface OtpData {
@@ -63,6 +99,7 @@ export const login = async (loginData: LoginData): Promise<LoginResponse> => {
             localStorage.setItem('userRole', response.data.role);
             localStorage.setItem('userCode', response.data.userCode);
             localStorage.setItem('userName', response.data.name);
+            localStorage.setItem('userId', response.data.userId);
         }
         
         return response.data;
@@ -98,31 +135,54 @@ export const resetPassword = async (resetData: ResetPasswordData) => {
     }
 }
 
-// Authentication utility functions
-export const authUtils = {
-    logout: () => {
-        // Clear all stored authentication data
-        localStorage.removeItem('jwtToken');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('userCode');
-        localStorage.removeItem('userName');
-    },
-
-    isAuthenticated: (): boolean => {
-        return !!localStorage.getItem('jwtToken');
-    },
-
-    getCurrentUser: () => {
-        return {
-            userCode: localStorage.getItem('userCode'),
-            role: localStorage.getItem('userRole'),
-            name: localStorage.getItem('userName'),
-            token: localStorage.getItem('jwtToken')
-        };
-    },
-
-    getAuthHeader: () => {
-        const token = localStorage.getItem('jwtToken');
-        return token ? `Bearer ${token}` : '';
+export const getCurrentUserProfile = async (): Promise<UserProfile> => {
+    try {
+        // Try the primary user profile endpoint
+        try {
+            const response = await userApiClient.get('/users/me');
+            console.log('Successfully fetched profile from /users/me');
+            return response.data;
+        } catch (primaryError: any) {
+            console.log('Primary endpoint failed, trying alternative...');
+            
+            // Try the alternative profile endpoint
+            const response = await userApiClient.get('/users/profile');
+            console.log('Successfully fetched profile from /users/profile');
+            return response.data;
+        }
+    } catch (error: any) {
+        console.error('All user profile endpoints failed:', error);
+        
+        if (error.response?.status === 401 || error.response?.status === 403) {
+            console.log('Authentication failed, user may need to login again');
+        }
+        
+        throw error;
     }
+};
+
+// Fallback method to get basic profile info from localStorage
+export const getCurrentUserProfileFromStorage = (): Partial<UserProfile> => {
+    const userCode = localStorage.getItem('userCode');
+    const userName = localStorage.getItem('userName');
+    const userRole = localStorage.getItem('userRole');
+    const userId = localStorage.getItem('userId');
+    
+    if (!userCode || !userName) {
+        throw new Error('No user data found in storage');
+    }
+    
+    // Parse the name if it contains both first and last name
+    const nameParts = userName.split(' ');
+    const fname = nameParts[0] || '';
+    const lname = nameParts.slice(1).join(' ') || '';
+    
+    return {
+        userCode,
+        fname,
+        lname,
+        role: userRole || 'student',
+        user_id: userId ? parseInt(userId) : 0,
+        // Note: ID, email, and phone are not available from storage
+    };
 };
