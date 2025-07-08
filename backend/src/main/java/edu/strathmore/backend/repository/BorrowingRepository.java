@@ -9,4 +9,6 @@ import java.util.List;
 public interface BorrowingRepository extends JpaRepository<BorrowingDetails, Long> {
     List<BorrowingDetails> findByBorrowerIdAndReturnDateIsNull(long borrowerId);
     long countByBorrowerIdAndReturnDateIsNull(long borrowerId);
+    List<BorrowingDetails> findByBorrowerId(long borrowerId);
+    List<BorrowingDetails> findByBorrowerIdAndReturnDateIsNotNull(long borrowerId);
 }

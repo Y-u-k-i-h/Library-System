@@ -15,15 +15,8 @@ const borrowingApiClient = axios.create({
 borrowingApiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('jwtToken');
-        console.log('Debug - API Request - Token exists:', !!token);
-        console.log('Debug - API Request - Request URL:', config.url);
-        console.log('Debug - API Request - Request method:', config.method);
-        
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
-            console.log('Debug - API Request - Authorization header set');
-        } else {
-            console.warn('Debug - API Request - No token found in localStorage');
         }
         return config;
     },
@@ -37,13 +30,7 @@ borrowingApiClient.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Only clear localStorage if this is actually a token expiration
-            // Don't clear on the first 401 - let the user try again
-            console.warn('Debug - API Response - Received 401 error, but keeping token for now');
-            console.warn('Debug - API Response - If this persists, the token might be expired');
-            
-            // TODO: You might want to implement retry logic or show a more specific error
-            // For now, we'll just log the warning but not clear the token immediately
+            console.warn('Authentication failed - please login again');
         }
         return Promise.reject(error);
     }
@@ -111,6 +98,33 @@ export const borrowingApi = {
         } catch (error) {
             console.error("Error returning book:", error);
             throw error;
+        }
+    },
+
+    getBorrowingHistory: async (): Promise<BorrowingDetails[]> => {
+        try {
+            // Use the dedicated history endpoint that queries borrowing_details table
+            // for only returned books (where returnDate is not null)
+            const response = await borrowingApiClient.get("/borrowings/me/history");
+            return response.data || [];
+        } catch (error) {
+            console.error("Error fetching borrowing history:", error);
+            // Fallback to the general endpoint with filtering if history endpoint fails
+            try {
+                console.log("Falling back to /borrowings/me with filtering...");
+                const fallbackResponse = await borrowingApiClient.get("/borrowings/me");
+                const allBorrowings = fallbackResponse.data || [];
+                
+                // Filter to only show borrowings that have been returned (history)
+                const history = allBorrowings.filter((borrowing: BorrowingDetails) => 
+                    borrowing.returnDate !== null
+                );
+                
+                return history;
+            } catch (fallbackError) {
+                console.error("Fallback also failed:", fallbackError);
+                throw error;
+            }
         }
     }
 };

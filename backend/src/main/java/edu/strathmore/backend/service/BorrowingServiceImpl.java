@@ -84,6 +84,26 @@ public class BorrowingServiceImpl implements BorrowingService {
     }
 
     @Override
+    public List<BorrowingDetails> getAllUserBorrowings(){
+        // Get the authenticated user from the security context
+        String authenticatedUserCode = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserCode(authenticatedUserCode)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + authenticatedUserCode));
+        
+        return borrowingRepository.findByBorrowerId(user.getId());
+    }
+
+    @Override
+    public List<BorrowingDetails> getUserBorrowingHistory(){
+        // Get the authenticated user from the security context
+        String authenticatedUserCode = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserCode(authenticatedUserCode)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found: " + authenticatedUserCode));
+        
+        return borrowingRepository.findByBorrowerIdAndReturnDateIsNotNull(user.getId());
+    }
+
+    @Override
     public BorrowingDetails returnUserBook(long borrowingId){
         // Get the authenticated user from the security context
         String authenticatedUserCode = SecurityContextHolder.getContext().getAuthentication().getName();

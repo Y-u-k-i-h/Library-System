@@ -20,7 +20,7 @@ export default function Dashboard() {
     // Render admin dashboard for librarians
     if (isLibrarian) {
         return (
-            <div className="dashboard">
+            <div className="dashboard admin-page">
                 <AdminDashboard />
             </div>
         );
@@ -28,7 +28,7 @@ export default function Dashboard() {
 
     // Render student dashboard for students
     return (
-        <div className="dashboard">
+        <div className="dashboard dashboard-page">
             <DashboardBody />
         </div>
     )

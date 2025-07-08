@@ -40,6 +40,20 @@ public class BorrowingDetailsController {
         return ResponseEntity.ok(borrowings);
     }
 
+    @GetMapping("/me/all")
+    public ResponseEntity<?> getAllUserBorrowings() {
+        // Get all borrowings (current and returned) for the authenticated user
+        List<BorrowingDetails> borrowings = borrowingService.getAllUserBorrowings();
+        return ResponseEntity.ok(borrowings);
+    }
+
+    @GetMapping("/me/history")
+    public ResponseEntity<?> getUserBorrowingHistory() {
+        // Get only the returned borrowings (history) for the authenticated user
+        List<BorrowingDetails> borrowings = borrowingService.getUserBorrowingHistory();
+        return ResponseEntity.ok(borrowings);
+    }
+
     @PostMapping("/return/{borrowingId}")
     public ResponseEntity<?> returnBook(@PathVariable long borrowingId) {
         try {

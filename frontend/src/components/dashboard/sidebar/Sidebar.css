@@ -1,4 +1,5 @@
-.sidebar {
+/* Dashboard Sidebar - Isolated from Admin styles */
+.dashboard-page .sidebar {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,22 +12,22 @@
     z-index: 40;
 }
 
-.sidebar-contents {
+.dashboard-page .sidebar-contents {
     padding: 15px 10px;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.sidebar-open {
+.dashboard-page .sidebar-open {
     width: 250px !important;
 }
 
-.sidebar-closed {
+.dashboard-page .sidebar-closed {
     width: 65px !important;
 }
 
-.menu-toggle {
+.dashboard-page .sidebar .menu-toggle {
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -35,20 +36,22 @@
     border-radius: 8px;
     transition: all 0.5s ease;
     gap: 15px;
-    position: relative; /* Add this for tooltip positioning */
+    position: relative;
+    border: none !important;
+    transform: none !important;
 }
 
-.sidebar-closed .menu-toggle {
+.dashboard-page .sidebar-closed .menu-toggle {
     justify-content: center;
     padding: 0;
     gap: 0;
 }
 
-.sidebar-closed .sidebar-text {
+.dashboard-page .sidebar-closed .sidebar-text {
     display: none;
 }
 
-.sidebar-text {
+.dashboard-page .sidebar .sidebar-text {
     color: white;
     font-weight: 500;
     font-size: 16px;
@@ -56,26 +59,29 @@
     transition: opacity 0.3s ease;
 }
 
-.menu-toggle img {
+.dashboard-page .sidebar .menu-toggle img {
     width: 24px;
     height: 24px;
     transition: transform 0.3s ease;
     flex-shrink: 0;
+    filter: none !important;
+    border: none !important;
 }
 
-.menu-toggle:hover {
+.dashboard-page .sidebar .menu-toggle:hover {
     background: rgba(0, 0, 0, 0.2);
+    transform: none !important;
 }
 
-.menu-toggle:hover img {
+.dashboard-page .sidebar .menu-toggle:hover img {
     transform: scale(1.1);
 }
 
-.menu-toggle:active {
+.dashboard-page .sidebar .menu-toggle:active {
     background: rgba(0, 0, 0, 0.4);
 }
 
-.nav-items-container {
+.dashboard-page .nav-items-container {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
@@ -84,7 +90,7 @@
     justify-content: space-evenly;
 }
 
-.nav-item {
+.dashboard-page .sidebar .nav-item {
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -93,25 +99,38 @@
     border-radius: 8px;
     transition: all 0.5s ease;
     gap: 15px;
-    position: relative; /* For tooltip positioning */
+    position: relative;
+    border: none !important;
+    border-left: none !important;
+    transform: none !important;
+    background: transparent !important;
 }
 
-.nav-item:hover {
-    background: rgba(0, 0, 0, 0.2);
+.dashboard-page .sidebar .nav-item:hover {
+    background: rgba(0, 0, 0, 0.2) !important;
+    transform: none !important;
 }
 
-.nav-icon {
+.dashboard-page .sidebar .nav-item.active {
+    border: none !important;
+    border-left: none !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.dashboard-page .sidebar .nav-icon {
     width: 25px;
     height: 25px;
     flex-shrink: 0;
     transition: transform 0.5s ease;
+    filter: none !important;
+    border: none !important;
 }
 
-.nav-item:hover .nav-icon {
+.dashboard-page .sidebar .nav-item:hover .nav-icon {
     transform: scale(1.1);
 }
 
-.nav-text {
+.dashboard-page .sidebar .nav-text {
     color: white;
     font-weight: 500;
     font-size: 16px;
@@ -119,24 +138,24 @@
     transition: opacity 0.5s ease;
 }
 
-.nav-item:hover .nav-text {
+.dashboard-page .sidebar .nav-item:hover .nav-text {
     opacity: 1;
 }
 
-.sidebar-closed .nav-item {
+.dashboard-page .sidebar-closed .nav-item {
     justify-content: center;
     padding: 0;
     gap: 0;
 }
 
-.sidebar-open .nav-text {
+.dashboard-page .sidebar-open .nav-text {
     position: static;
     opacity: 1;
     width: auto;
     transition: all 0.5s ease;
 }
 
-.sidebar-closed .nav-text {
+.dashboard-page .sidebar-closed .nav-text {
     opacity: 0;
     width: 0;
     overflow: hidden;
@@ -144,8 +163,8 @@
     position: absolute;
 }
 
-/* Tooltip styles */
-.nav-item::after {
+/* Tooltip styles - Dashboard specific */
+.dashboard-page .sidebar .nav-item::after {
     content: attr(data-tooltip);
     position: absolute;
     left: 100%;
@@ -166,8 +185,8 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Tooltip arrow */
-.nav-item::before {
+/* Tooltip arrow - Dashboard specific */
+.dashboard-page .sidebar .nav-item::before {
     content: '';
     position: absolute;
     left: 100%;
@@ -183,22 +202,22 @@
 }
 
 /* Show tooltip on hover - only when sidebar is closed */
-.sidebar-closed .nav-item:hover::after,
-.sidebar-closed .nav-item:hover::before {
+.dashboard-page .sidebar-closed .nav-item:hover::after,
+.dashboard-page .sidebar-closed .nav-item:hover::before {
     opacity: 1;
 }
 
-/* Hide tooltips when dialog is open */
-body.dialog-open .nav-item::after,
-body.dialog-open .nav-item::before,
-body.dialog-open .menu-toggle::after,
-body.dialog-open .menu-toggle::before {
+/* Hide tooltips when dialog is open - Dashboard specific */
+body.dialog-open .dashboard-page .sidebar .nav-item::after,
+body.dialog-open .dashboard-page .sidebar .nav-item::before,
+body.dialog-open .dashboard-page .sidebar .menu-toggle::after,
+body.dialog-open .dashboard-page .sidebar .menu-toggle::before {
     opacity: 0 !important;
     pointer-events: none !important;
 }
 
-/* Menu toggle tooltip styles */
-.menu-toggle::after {
+/* Menu toggle tooltip styles - Dashboard specific */
+.dashboard-page .sidebar .menu-toggle::after {
     content: attr(data-tooltip);
     position: absolute;
     left: 100%;
@@ -219,7 +238,7 @@ body.dialog-open .menu-toggle::before {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.menu-toggle::before {
+.dashboard-page .sidebar .menu-toggle::before {
     content: '';
     position: absolute;
     left: 100%;
@@ -235,14 +254,14 @@ body.dialog-open .menu-toggle::before {
 }
 
 /* Show menu tooltip on hover - only when sidebar is closed */
-.sidebar-closed .menu-toggle:hover::after,
-.sidebar-closed .menu-toggle:hover::before {
+.dashboard-page .sidebar-closed .menu-toggle:hover::after,
+.dashboard-page .sidebar-closed .menu-toggle:hover::before {
     opacity: 1;
 }
 
-/* Media Query for mobile overlay behavior */
+/* Media Query for mobile overlay behavior - Dashboard specific */
 @media (max-width: 700px) {
-    .sidebar {
+    .dashboard-page .sidebar {
         z-index: 60; /* Higher than header (50) to overlay on top */
     }
 }

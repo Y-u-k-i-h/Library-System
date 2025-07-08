@@ -10,5 +10,6 @@ public interface BorrowingService {
     BorrowingDetails returnUserBook(long borrowingId); // New method for authenticated user return
     List<BorrowingDetails> getCurrentBorrowingsByUser(long userId);
     List<BorrowingDetails> getCurrentUserBorrowings();
-
+    List<BorrowingDetails> getAllUserBorrowings();
+    List<BorrowingDetails> getUserBorrowingHistory();
 }

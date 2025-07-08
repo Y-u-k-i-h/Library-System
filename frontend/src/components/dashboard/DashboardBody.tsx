@@ -1,4 +1,4 @@
-import {useState, type ReactNode} from "react";
+import {useState, type ReactNode, cloneElement, isValidElement} from "react";
 
 import "./dashboard.css";
 import Header from "./header/Header.tsx";
@@ -38,7 +38,7 @@ export default function Dashboard({ children }: DashboardProps) {
 
     // Render the dashboard with header and sidebar components
     return (
-        <div className="dashboard">
+        <div className="dashboard dashboard-page">
             <Header
                 isSidebarOpen={isSidebarOpen}
                 onFiltersChange={handleFiltersChange}
@@ -54,7 +54,13 @@ export default function Dashboard({ children }: DashboardProps) {
             />
 
             <main className={`dashboard-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-                {children || <DashboardContent appliedFilters={appliedFilters} searchTerm={searchTerm} />}
+                {children ? (
+                    isValidElement(children) ? 
+                        cloneElement(children, { appliedFilters, searchTerm } as any) : 
+                        children
+                ) : (
+                    <DashboardContent appliedFilters={appliedFilters} searchTerm={searchTerm} />
+                )}
             </main>
 
         </div>
